@@ -1,0 +1,94 @@
+<div class="page-header">
+  <h1>Applicants</h1>
+  <p>Select a job to view and manage applicants.</p>
+</div>
+
+@if (errorMsg()) {
+  <div class="alert alert-error">{{ errorMsg() }}</div>
+}
+
+<div class="applicants-layout">
+  <!-- Jobs list -->
+  <mat-card class="jobs-panel">
+    <h2>Your Jobs</h2>
+    @if (loadingJobs()) {
+      <app-loading-spinner />
+    } @else if (jobs().length === 0) {
+      <div class="empty-state">
+        <p>No jobs posted yet.</p>
+      </div>
+    } @else {
+      <div class="jobs-list">
+        @for (job of jobs(); track job.id) {
+          <div class="job-item" [class.active]="selectedJob()?.id === job.id"
+               (click)="selectJob(job)">
+            <div class="job-name">{{ job.title }}</div>
+            <div class="job-meta-row">
+              <span>{{ job.location }}</span>
+              <app-status-badge [status]="job.status" />
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </mat-card>
+
+  <!-- Applicants panel -->
+  <mat-card class="applicants-panel">
+    @if (!selectedJob()) {
+      <div class="empty-state prompt">
+        <p>Select a job from the left to view applicants.</p>
+      </div>
+    } @else {
+      <h2>Applicants for: {{ selectedJob()!.title }}</h2>
+
+      @if (loadingApps()) {
+        <app-loading-spinner />
+      } @else if (applications().length === 0) {
+        <div class="empty-state">
+          <p>No applications received for this job.</p>
+        </div>
+      } @else {
+        <div class="table-wrapper">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Candidate</th>
+                <th>Applied</th>
+                <th>Status</th>
+                <th>Update Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (app of applications(); track app.id) {
+                <tr>
+                  <td>
+                    <div class="candidate-cell">
+                      <strong>{{ app.studentName }}</strong>
+                      @if (app.resumeId) {
+                        <span class="resume-link"><mat-icon class="resume-icon-sm">description</mat-icon> Resume</span>
+                      }
+                    </div>
+                  </td>
+                  <td>{{ formatDate(app.appliedAt) }}</td>
+                  <td><app-status-badge [status]="app.status" /></td>
+                  <td>
+                    <mat-form-field appearance="outline" class="status-field">
+                      <mat-select [value]="app.status"
+                                  (selectionChange)="updateStatus(app.id, $event.value)"
+                                  [disabled]="updatingId() === app.id">
+                        @for (status of statusOptions; track status) {
+                          <mat-option [value]="status">{{ status.replace('_', ' ') }}</mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+  </mat-card>
+</div>

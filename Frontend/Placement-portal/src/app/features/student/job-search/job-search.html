@@ -1,0 +1,135 @@
+<div class="page-header">
+  <h1>Job Search</h1>
+  <p>Find and apply to the latest job openings.</p>
+</div>
+
+<!-- Filters -->
+<mat-card class="filter-bar">
+  <div class="filter-row">
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Location</mat-label>
+      <input matInput [value]="filterLocation()"
+             (input)="filterLocation.set($any($event.target).value)"
+             placeholder="e.g. Bangalore" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Experience Level</mat-label>
+      <mat-select [value]="filterLevel()"
+                  (selectionChange)="filterLevel.set($event.value)">
+        <mat-option value="">All Levels</mat-option>
+        @for (level of experienceLevels; track level) {
+          <mat-option [value]="level">{{ level }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <div class="filter-actions">
+      <button mat-flat-button color="primary" (click)="applyFilter()">Search</button>
+      <button mat-stroked-button (click)="clearFilter()">Clear</button>
+    </div>
+  </div>
+</mat-card>
+
+@if (loading()) {
+  <app-loading-spinner />
+} @else {
+  @if (jobs().length === 0) {
+    <mat-card class="empty-state">
+      <p>No jobs found matching your criteria.</p>
+    </mat-card>
+  } @else {
+    <div class="jobs-grid">
+      @for (job of jobs(); track job.id) {
+        <mat-card class="job-card">
+          <div class="job-card-header">
+            <div>
+              <h3 class="job-title">{{ job.title }}</h3>
+              <p class="company-name">{{ job.companyName }}</p>
+            </div>
+            @if (isApplied(job.id)) {
+              <span class="badge badge-success">Applied</span>
+            }
+          </div>
+
+          <div class="job-meta">
+            <span class="meta-item"><mat-icon class="meta-icon">location_on</mat-icon> {{ job.location }}</span>
+            <span class="meta-item"><mat-icon class="meta-icon">payments</mat-icon> {{ formatSalary(job.salaryMin, job.salaryMax) }}</span>
+            <span class="meta-item"><mat-icon class="meta-icon">bar_chart</mat-icon> {{ job.experienceLevel }}</span>
+            <span class="meta-item"><mat-icon class="meta-icon">event</mat-icon> Deadline: {{ formatDate(job.applicationDeadline) }}</span>
+          </div>
+
+          @if (job.skills && job.skills.length > 0) {
+            <div class="skills-row">
+              @for (skill of job.skills.slice(0, 5); track skill.id) {
+                <span class="skill-chip">{{ skill.name }}</span>
+              }
+              @if (job.skills.length > 5) {
+                <span class="skill-chip more">+{{ job.skills.length - 5 }}</span>
+              }
+            </div>
+          }
+
+          <div class="job-footer">
+            <div class="job-footer-info">
+              <span class="badge badge-neutral">{{ job.jobType }}</span>
+              <span class="cgpa-req">Min CGPA: {{ job.minCgpa }}</span>
+            </div>
+            @if (!isApplied(job.id)) {
+              <button mat-flat-button color="primary" (click)="openApplyModal(job)">Apply Now</button>
+            } @else {
+              <span class="applied-text">Applied</span>
+            }
+          </div>
+        </mat-card>
+      }
+    </div>
+
+    <!-- Pagination -->
+    <mat-paginator [length]="totalElements()" [pageSize]="pageSize" [pageIndex]="currentPage()" (page)="onPageChange($event)" [pageSizeOptions]="[12, 24, 48]"></mat-paginator>
+  }
+}
+
+<!-- Apply Modal -->
+@if (selectedJobForApply(); as job) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Apply for {{ job.title }}</h2>
+        <button class="modal-close" (click)="closeModal()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="modal-body">
+        @if (applySuccess()) {
+          <div class="alert alert-success">{{ applySuccess() }}</div>
+        }
+        @if (applyError()) {
+          <div class="alert alert-error">{{ applyError() }}</div>
+        }
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Select Resume *</mat-label>
+          <mat-select [value]="applyForm().resumeId"
+                      (selectionChange)="updateApplyForm('resumeId', $event.value)">
+            <mat-option value="">-- Choose resume --</mat-option>
+            @for (resume of resumes(); track resume.id) {
+              <mat-option [value]="resume.id">{{ resume.fileName }}{{ resume.isPrimary ? ' (Primary)' : '' }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Cover Letter (optional)</mat-label>
+          <textarea matInput rows="5" [value]="applyForm().coverLetter"
+                    (input)="updateApplyForm('coverLetter', $any($event.target).value)"
+                    placeholder="Write a brief cover letter..."></textarea>
+        </mat-form-field>
+      </div>
+      <div class="modal-footer">
+        <button mat-stroked-button (click)="closeModal()">Cancel</button>
+        <button mat-flat-button color="primary" (click)="submitApplication()" [disabled]="applying()">
+          {{ applying() ? 'Submitting...' : 'Submit Application' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

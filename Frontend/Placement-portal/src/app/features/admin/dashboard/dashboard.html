@@ -1,0 +1,77 @@
+<div class="page-header">
+  <h1>Admin Dashboard</h1>
+  <p>System administration and configuration overview.</p>
+</div>
+
+@if (loading()) {
+  <app-loading-spinner />
+} @else {
+  @if (stats(); as s) {
+    <div class="stats-grid">
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon">groups</mat-icon>
+        <div class="stat-info">
+          <span class="stat-value">{{ s.totalUsers }}</span>
+          <span class="stat-label">Total Users</span>
+        </div>
+      </mat-card>
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon">check_circle</mat-icon>
+        <div class="stat-info">
+          <span class="stat-value">{{ s.activeUsers }}</span>
+          <span class="stat-label">Active Users</span>
+        </div>
+      </mat-card>
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon">school</mat-icon>
+        <div class="stat-info">
+          <span class="stat-value">{{ s.totalStudents }}</span>
+          <span class="stat-label">Students</span>
+        </div>
+      </mat-card>
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon">business</mat-icon>
+        <div class="stat-info">
+          <span class="stat-value">{{ s.totalEmployers }}</span>
+          <span class="stat-label">Employers</span>
+        </div>
+      </mat-card>
+    </div>
+  }
+
+  <!-- Admin module links -->
+  <div class="modules-grid">
+    <a [routerLink]="['/admin/users']" class="module-card">
+      <mat-card class="module-card-inner">
+        <mat-icon class="module-icon users">person</mat-icon>
+        <div class="module-info">
+          <h3>User Management</h3>
+          <p>Manage user accounts, roles, and activate/deactivate users.</p>
+        </div>
+        <span class="module-arrow">→</span>
+      </mat-card>
+    </a>
+
+    <a [routerLink]="['/admin/config']" class="module-card">
+      <mat-card class="module-card-inner">
+        <mat-icon class="module-icon config">settings</mat-icon>
+        <div class="module-info">
+          <h3>System Configuration</h3>
+          <p>Manage system-wide configuration key-value settings.</p>
+        </div>
+        <span class="module-arrow">→</span>
+      </mat-card>
+    </a>
+
+    <a [routerLink]="['/admin/audit-logs']" class="module-card">
+      <mat-card class="module-card-inner">
+        <mat-icon class="module-icon audit">receipt_long</mat-icon>
+        <div class="module-info">
+          <h3>Audit Logs</h3>
+          <p>View system audit trail for all user actions.</p>
+        </div>
+        <span class="module-arrow">→</span>
+      </mat-card>
+    </a>
+  </div>
+}

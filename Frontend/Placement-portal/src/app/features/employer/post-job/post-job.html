@@ -1,0 +1,111 @@
+<div class="page-header">
+  <h1>Post a New Job</h1>
+  <p>Fill in the details below to create a new job listing.</p>
+</div>
+
+<mat-card class="form-card">
+  @if (successMsg()) {
+    <div class="alert alert-success">{{ successMsg() }}</div>
+  }
+  @if (errorMsg()) {
+    <div class="alert alert-error">{{ errorMsg() }}</div>
+  }
+
+  <form (ngSubmit)="submit()">
+    <div class="form-section">
+      <h3>Basic Information</h3>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Job Title *</mat-label>
+        <input matInput type="text" [value]="form().title"
+               (input)="updateForm('title', $any($event.target).value)"
+               placeholder="e.g. Software Engineer" required />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Description *</mat-label>
+        <textarea matInput rows="6" [value]="form().description"
+                  (input)="updateForm('description', $any($event.target).value)"
+                  placeholder="Describe the role, responsibilities, and requirements..."></textarea>
+      </mat-form-field>
+
+      <div class="form-row-2">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Location *</mat-label>
+          <input matInput type="text" [value]="form().location"
+                 (input)="updateForm('location', $any($event.target).value)"
+                 placeholder="e.g. Bangalore, India" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Job Type</mat-label>
+          <mat-select [value]="form().jobType"
+                      (selectionChange)="updateForm('jobType', $event.value)">
+            @for (type of jobTypes; track type) {
+              <mat-option [value]="type">{{ type.replace('_', ' ') }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Requirements</h3>
+
+      <div class="form-row-3">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Experience Level</mat-label>
+          <mat-select [value]="form().experienceLevel"
+                      (selectionChange)="updateForm('experienceLevel', $event.value)">
+            @for (level of experienceLevels; track level) {
+              <mat-option [value]="level">{{ level }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Minimum CGPA</mat-label>
+          <input matInput type="number" step="0.1" min="0" max="10"
+                 [value]="form().minCgpa"
+                 (input)="updateForm('minCgpa', +$any($event.target).value)" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Number of Openings</mat-label>
+          <input matInput type="number" min="1"
+                 [value]="form().openingsCount"
+                 (input)="updateForm('openingsCount', +$any($event.target).value)" />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Compensation & Timeline</h3>
+
+      <div class="form-row-3">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Salary Min (₹/year)</mat-label>
+          <input matInput type="number" min="0"
+                 [value]="form().salaryMin"
+                 (input)="updateForm('salaryMin', +$any($event.target).value)"
+                 placeholder="e.g. 500000" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Salary Max (₹/year)</mat-label>
+          <input matInput type="number" min="0"
+                 [value]="form().salaryMax"
+                 (input)="updateForm('salaryMax', +$any($event.target).value)"
+                 placeholder="e.g. 1200000" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Application Deadline *</mat-label>
+          <input matInput type="date" [value]="form().applicationDeadline"
+                 (change)="updateForm('applicationDeadline', $any($event.target).value)" />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button mat-flat-button color="primary" type="submit" [disabled]="submitting()">
+        {{ submitting() ? 'Posting...' : 'Post Job' }}
+      </button>
+    </div>
+  </form>
+</mat-card>

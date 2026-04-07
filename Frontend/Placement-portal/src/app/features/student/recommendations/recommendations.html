@@ -1,0 +1,101 @@
+<div class="page-header">
+  <h1>Job Recommendations</h1>
+  <p>Personalized job matches based on your profile and skills.</p>
+</div>
+
+@if (loading()) {
+  <app-loading-spinner />
+} @else {
+  @if (jobs().length === 0) {
+    <mat-card class="empty-state">
+      <p>No recommendations found. Complete your profile and add skills to get personalized matches!</p>
+    </mat-card>
+  } @else {
+    <div class="recommendations-grid">
+      @for (job of jobs(); track job.id) {
+        <mat-card class="rec-card">
+          <div class="rec-header">
+            <div class="rec-title-group">
+              <h3>{{ job.title }}</h3>
+              <p class="company">{{ job.companyName }}</p>
+            </div>
+            <div [class]="matchBadgeClass(job.matchScore ?? 0)">
+              {{ job.matchScore ?? 0 }}% Match
+            </div>
+          </div>
+
+          <div class="rec-meta">
+            <span><mat-icon class="meta-icon">location_on</mat-icon> {{ job.location }}</span>
+            <span><mat-icon class="meta-icon">payments</mat-icon> {{ formatSalary(job.salaryMin, job.salaryMax) }}</span>
+            <span><mat-icon class="meta-icon">bar_chart</mat-icon> {{ job.experienceLevel }}</span>
+            <span><mat-icon class="meta-icon">event</mat-icon> {{ formatDate(job.applicationDeadline) }}</span>
+          </div>
+
+          @if (job.skills && job.skills.length > 0) {
+            <div class="skills-row">
+              @for (skill of job.skills.slice(0, 4); track skill.id) {
+                <span class="skill-chip">{{ skill.name }}</span>
+              }
+              @if (job.skills.length > 4) {
+                <span class="skill-chip more">+{{ job.skills.length - 4 }}</span>
+              }
+            </div>
+          }
+
+          <div class="rec-footer">
+            <span class="badge badge-neutral">{{ job.jobType }}</span>
+            @if (appliedIds().has(job.id)) {
+              <span class="applied-text">Applied</span>
+            } @else {
+              <button mat-flat-button color="primary" (click)="openApply(job)">Apply Now</button>
+            }
+          </div>
+        </mat-card>
+      }
+    </div>
+  }
+}
+
+<!-- Apply Modal -->
+@if (selectedJob(); as job) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Apply — {{ job.title }}</h2>
+        <button class="modal-close" (click)="closeModal()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="modal-body">
+        @if (applySuccess()) {
+          <div class="alert alert-success">{{ applySuccess() }}</div>
+        }
+        @if (applyError()) {
+          <div class="alert alert-error">{{ applyError() }}</div>
+        }
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Select Resume *</mat-label>
+          <mat-select [value]="applyForm().resumeId"
+                      (selectionChange)="updateForm('resumeId', $event.value)">
+            <mat-option value="">-- Choose resume --</mat-option>
+            @for (r of resumes(); track r.id) {
+              <mat-option [value]="r.id">{{ r.fileName }}{{ r.isPrimary ? ' (Primary)' : '' }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Cover Letter (optional)</mat-label>
+          <textarea matInput rows="4" [value]="applyForm().coverLetter"
+                    (input)="updateForm('coverLetter', $any($event.target).value)"
+                    placeholder="Express your interest..."></textarea>
+        </mat-form-field>
+      </div>
+      <div class="modal-footer">
+        <button mat-stroked-button (click)="closeModal()">Cancel</button>
+        <button mat-flat-button color="primary" (click)="submitApply()" [disabled]="applying()">
+          {{ applying() ? 'Submitting...' : 'Submit Application' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

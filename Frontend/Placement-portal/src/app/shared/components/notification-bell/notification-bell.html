@@ -1,0 +1,28 @@
+<button mat-icon-button [matMenuTriggerFor]="notifMenu"
+        [matBadge]="notificationService.unreadCount()"
+        matBadgeColor="warn"
+        [matBadgeHidden]="notificationService.unreadCount() === 0"
+        matBadgeSize="small">
+  <mat-icon>notifications</mat-icon>
+</button>
+
+<mat-menu #notifMenu="matMenu" class="notification-menu">
+  <div class="dropdown-header" (click)="$event.stopPropagation()">
+    <span>Notifications</span>
+    <button mat-button color="primary" (click)="markAllRead(); $event.stopPropagation()">
+      Mark all read
+    </button>
+  </div>
+
+  @for (n of notifications(); track n.id) {
+    <button mat-menu-item [class.unread]="!n.isRead" (click)="markRead(n.id)">
+      <div class="notif-content">
+        <div class="notif-title">{{ n.title }}</div>
+        <div class="notif-message">{{ n.message }}</div>
+        <div class="notif-time">{{ n.createdAt | timeAgo }}</div>
+      </div>
+    </button>
+  } @empty {
+    <div class="empty-msg" (click)="$event.stopPropagation()">No notifications</div>
+  }
+</mat-menu>

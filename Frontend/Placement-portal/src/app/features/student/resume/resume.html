@@ -1,0 +1,70 @@
+<div class="page-header">
+  <h1>My Resumes</h1>
+  <p>Upload and manage your resumes for job applications.</p>
+</div>
+
+@if (successMsg()) {
+  <div class="alert alert-success">{{ successMsg() }}</div>
+}
+@if (errorMsg()) {
+  <div class="alert alert-error">{{ errorMsg() }}</div>
+}
+
+<mat-card class="upload-card">
+  <h2>Upload New Resume</h2>
+  <p class="hint">Accepted formats: PDF, DOC, DOCX. Max size: 5 MB.</p>
+  <label class="upload-label" [class.uploading]="uploading()">
+    <input type="file" accept=".pdf,.doc,.docx" (change)="onFileSelected($event)" [disabled]="uploading()" />
+    @if (uploading()) {
+      <span>Uploading...</span>
+    } @else {
+      <mat-icon class="upload-icon">folder_open</mat-icon>
+      <span>Click to select file</span>
+    }
+  </label>
+</mat-card>
+
+@if (loading()) {
+  <app-loading-spinner />
+} @else {
+  <mat-card>
+    <h2>Uploaded Resumes</h2>
+
+    @if (resumes().length === 0) {
+      <div class="empty-state">
+        <p>No resumes uploaded yet. Upload your first resume above.</p>
+      </div>
+    } @else {
+      <div class="resume-list">
+        @for (resume of resumes(); track resume.id) {
+          <div class="resume-item" [class.primary]="resume.isPrimary">
+            <mat-icon class="resume-icon">description</mat-icon>
+            <div class="resume-details">
+              <div class="resume-name">
+                {{ resume.fileName }}
+                @if (resume.isPrimary) {
+                  <span class="badge badge-success">Primary</span>
+                }
+              </div>
+              <div class="resume-meta">
+                <span>{{ formatSize(resume.fileSizeBytes) }}</span>
+                <span>•</span>
+                <span>Uploaded {{ formatDate(resume.uploadedAt) }}</span>
+              </div>
+            </div>
+            <div class="resume-actions">
+              @if (!resume.isPrimary) {
+                <button mat-stroked-button (click)="setPrimary(resume.id)">
+                  Set Primary
+                </button>
+              }
+              <button mat-flat-button color="warn" (click)="deleteResume(resume.id)">
+                Delete
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </mat-card>
+}

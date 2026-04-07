@@ -1,0 +1,121 @@
+<div class="page-header">
+  <h1>Report Review</h1>
+  <p>Review and provide feedback on student internship reports.</p>
+</div>
+
+@if (successMsg()) {
+  <div class="alert alert-success">{{ successMsg() }}</div>
+}
+@if (errorMsg()) {
+  <div class="alert alert-error">{{ errorMsg() }}</div>
+}
+
+<div class="tabs">
+  <button class="tab-btn" [class.active]="activeTab() === 'pending'" (click)="activeTab.set('pending')">
+    Pending Review
+    @if (pendingReports().length > 0) {
+      <span class="tab-count">{{ pendingReports().length }}</span>
+    }
+  </button>
+  <button class="tab-btn" [class.active]="activeTab() === 'reviewed'" (click)="activeTab.set('reviewed')">
+    Reviewed
+  </button>
+</div>
+
+@if (loading()) {
+  <app-loading-spinner />
+} @else {
+  @if (activeTab() === 'pending') {
+    @if (pendingReports().length === 0) {
+      <mat-card class="empty-state">
+        <p>No pending reports to review. You're all caught up!</p>
+      </mat-card>
+    } @else {
+      <div class="reports-list">
+        @for (report of pendingReports(); track report.id) {
+          <mat-card class="report-card">
+            <div class="report-header" (click)="toggleExpand(report.id)">
+              <div class="report-title-group">
+                <h3>{{ report.title }}</h3>
+                <div class="report-meta">
+                  <span class="badge badge-neutral">{{ report.reportType }}</span>
+                  <span>Submitted: {{ formatDate(report.submittedAt) }}</span>
+                </div>
+              </div>
+              <div class="report-actions-row">
+                <app-status-badge [status]="report.status" />
+                <button class="expand-btn">
+                  <mat-icon>{{ expandedId() === report.id ? 'expand_less' : 'expand_more' }}</mat-icon>
+                </button>
+              </div>
+            </div>
+
+            @if (expandedId() === report.id) {
+              <div class="report-content">
+                <div class="content-box">{{ report.content }}</div>
+                <div class="action-buttons">
+                  <button mat-flat-button color="primary" (click)="approve(report.id)"
+                          [disabled]="processing() === report.id">
+                    {{ processing() === report.id ? 'Approving...' : 'Approve' }}
+                  </button>
+                  <button class="btn btn-warning btn-sm" (click)="openRevision(report.id)"
+                          [disabled]="processing() === report.id">
+                    Request Revision
+                  </button>
+                </div>
+              </div>
+            }
+
+            @if (revisionReportId() === report.id) {
+              <div class="revision-form">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Revision Comments *</mat-label>
+                  <textarea matInput rows="4" [value]="revisionComment()"
+                            (input)="revisionComment.set($any($event.target).value)"
+                            placeholder="Explain what needs to be revised..."></textarea>
+                </mat-form-field>
+                <div class="revision-actions">
+                  <button mat-stroked-button (click)="revisionReportId.set(null)">Cancel</button>
+                  <button class="btn btn-warning btn-sm" (click)="submitRevision()"
+                          [disabled]="processing() === report.id">
+                    Send for Revision
+                  </button>
+                </div>
+              </div>
+            }
+          </mat-card>
+        }
+      </div>
+    }
+  }
+
+  @if (activeTab() === 'reviewed') {
+    @if (reviewedReports().length === 0) {
+      <mat-card class="empty-state">
+        <p>No reviewed reports yet.</p>
+      </mat-card>
+    } @else {
+      <div class="reports-list">
+        @for (report of reviewedReports(); track report.id) {
+          <mat-card class="report-card reviewed">
+            <div class="report-header">
+              <div class="report-title-group">
+                <h3>{{ report.title }}</h3>
+                <div class="report-meta">
+                  <span class="badge badge-neutral">{{ report.reportType }}</span>
+                  <span>Reviewed: {{ formatDate(report.reviewedAt) }}</span>
+                </div>
+              </div>
+              <app-status-badge [status]="report.status" />
+            </div>
+            @if (report.reviewerComments) {
+              <div class="review-note">
+                <strong>Your comments:</strong> {{ report.reviewerComments }}
+              </div>
+            }
+          </mat-card>
+        }
+      </div>
+    }
+  }
+}

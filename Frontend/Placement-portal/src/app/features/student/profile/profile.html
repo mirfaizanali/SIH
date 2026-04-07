@@ -1,0 +1,126 @@
+<div class="page-header">
+  <h1>My Profile</h1>
+  <p>Manage your academic and contact information.</p>
+</div>
+
+@if (loading()) {
+  <app-loading-spinner />
+} @else if (profile(); as p) {
+  <div class="profile-layout">
+    <!-- Read-only academic info -->
+    <mat-card class="profile-info">
+      <h2>Academic Information</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Full Name</span>
+          <span class="info-value">{{ p.fullName }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Email</span>
+          <span class="info-value">{{ p.email }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Roll Number</span>
+          <span class="info-value">{{ p.rollNumber }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Department</span>
+          <span class="info-value">{{ p.department }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Batch Year</span>
+          <span class="info-value">{{ p.batchYear }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">CGPA</span>
+          <span class="info-value cgpa">{{ p.cgpa }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Placement Status</span>
+          <app-status-badge [status]="p.isPlaced ? 'PLACED' : 'ACTIVE'" />
+        </div>
+        @if (p.isPlaced) {
+          <div class="info-item">
+            <span class="info-label">Placed At</span>
+            <span class="info-value">{{ p.placedCompany }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Package</span>
+            <span class="info-value">₹{{ p.placementPackage }}  LPA</span>
+          </div>
+        }
+      </div>
+
+      @if (p.skills && p.skills.length > 0) {
+        <div class="skills-section">
+          <h3>Skills</h3>
+          <div class="skills-list">
+            @for (skill of p.skills; track skill.id) {
+              <span class="skill-chip">{{ skill.name }}</span>
+            }
+          </div>
+        </div>
+      }
+    </mat-card>
+
+    <!-- Editable fields -->
+    <mat-card class="edit-form-card">
+      <h2>Edit Contact & Links</h2>
+
+      @if (saveSuccess()) {
+        <div class="alert alert-success">Profile updated successfully!</div>
+      }
+      @if (errorMsg()) {
+        <div class="alert alert-error">{{ errorMsg() }}</div>
+      }
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Phone</mat-label>
+        <input matInput type="tel" [value]="editForm().phone"
+               (input)="updateField('phone', $any($event.target).value)"
+               placeholder="+91 98765 43210" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>LinkedIn URL</mat-label>
+        <input matInput type="url" [value]="editForm().linkedinUrl"
+               (input)="updateField('linkedinUrl', $any($event.target).value)"
+               placeholder="https://linkedin.com/in/yourprofile" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>GitHub URL</mat-label>
+        <input matInput type="url" [value]="editForm().githubUrl"
+               (input)="updateField('githubUrl', $any($event.target).value)"
+               placeholder="https://github.com/yourusername" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Bio</mat-label>
+        <textarea matInput rows="4" [value]="editForm().bio"
+                  (input)="updateField('bio', $any($event.target).value)"
+                  placeholder="Tell us about yourself..."></textarea>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Preferred Locations (comma separated)</mat-label>
+        <input matInput type="text" [value]="editForm().preferredLocations"
+               (input)="updateField('preferredLocations', $any($event.target).value)"
+               placeholder="Bangalore, Mumbai, Remote" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Preferred Job Types</mat-label>
+        <mat-select [value]="editForm().preferredJobTypes"
+                    (selectionChange)="updateField('preferredJobTypes', $event.value)">
+          <mat-option value="">Select...</mat-option>
+          <mat-option value="FULL_TIME">Full Time</mat-option>
+          <mat-option value="PART_TIME">Part Time</mat-option>
+          <mat-option value="CONTRACT">Contract</mat-option>
+          <mat-option value="INTERNSHIP">Internship</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="form-actions">
+        <button mat-flat-button color="primary" (click)="save()" [disabled]="saving()">
+          {{ saving() ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+    </mat-card>
+  </div>
+}

@@ -1,0 +1,110 @@
+<div class="landing-page">
+  <!-- Glowing background elements -->
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+  <div class="glow glow-3"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="brand">
+      <mat-icon class="brand-icon">school</mat-icon>
+      <span class="brand-text">Placement Portal</span>
+    </div>
+    
+    <div class="nav-actions">
+      <button mat-icon-button (click)="themeService.toggle()" class="theme-toggle">
+        <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+      <a routerLink="/auth/login" class="btn btn-secondary nav-btn">Login</a>
+      <a routerLink="/auth/register" class="btn btn-primary nav-btn">Get Started</a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <div class="badge-pill glass-panel slide-down">
+        ✨ The Next Generation of Campus Placements
+      </div>
+      
+      <h1 class="hero-title fade-in-up delay-1">
+        Unlock Your Potential with <br/> 
+        <span class="gradient-text">Intelligent Placements.</span>
+      </h1>
+      
+      <p class="hero-subtitle fade-in-up delay-2">
+        A unified ecosystem connecting students, employers, faculty mentors, and placement officers to streamline campus recruitment and career success.
+      </p>
+      
+      <div class="hero-actions fade-in-up delay-3">
+        <a routerLink="/auth/register" class="btn btn-primary btn-lg action-btn">
+          Start Your Journey
+          <mat-icon>arrow_forward</mat-icon>
+        </a>
+        <a routerLink="/auth/login" class="btn btn-secondary btn-lg action-btn">
+          Employer Access
+        </a>
+      </div>
+      
+      <!-- Stats Preview -->
+      <div class="stats-preview glass-panel fade-in-up delay-4">
+        <div class="stat-item">
+          <span class="stat-num">95%</span>
+          <span class="stat-desc">Placement Rate</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-num">500+</span>
+          <span class="stat-desc">Partnered Companies</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-num">24/7</span>
+          <span class="stat-desc">Faculty Mentorship</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Grid -->
+  <section class="features-section">
+    <h2 class="section-title">One Platform. <span class="gradient-text">Complete Synergy.</span></h2>
+    
+    <div class="features-grid">
+      <div class="feature-card glass-panel hover-lift">
+        <div class="icon-wrapper icon-student">
+          <mat-icon>school</mat-icon>
+        </div>
+        <h3>For Students</h3>
+        <p>Build your profile, track applications, review interview feedback, and connect with faculty mentors seamlessly.</p>
+      </div>
+
+      <div class="feature-card glass-panel hover-lift">
+        <div class="icon-wrapper icon-employer">
+          <mat-icon>business</mat-icon>
+        </div>
+        <h3>For Employers</h3>
+        <p>Post jobs, manage drive events, schedule interviews, and scout top campus talent with advanced filtering.</p>
+      </div>
+
+      <div class="feature-card glass-panel hover-lift">
+        <div class="icon-wrapper icon-faculty">
+          <mat-icon>groups</mat-icon>
+        </div>
+        <h3>For Faculty & Admins</h3>
+        <p>Review student reports, analyze placement statistics, and manage the entire recruitment ecosystem effortlessly.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="brand">
+        <mat-icon class="brand-icon">school</mat-icon>
+        <span class="brand-text">Placement Portal</span>
+      </div>
+      <p class="copyright">&copy; 2026 Placement Portal. Designed for the Future.</p>
+    </div>
+  </footer>
+</div>

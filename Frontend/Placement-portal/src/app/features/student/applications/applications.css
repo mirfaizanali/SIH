@@ -1,0 +1,30 @@
+/* ─── Table Header ─── */
+.table-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.total-count {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+}
+
+.table {
+  min-width: 600px;
+}
+
+.position-cell strong {
+  font-size: 0.9375rem;
+  letter-spacing: -0.01em;
+}
+
+.text-muted {
+  color: var(--text-muted);
+}

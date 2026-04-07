@@ -1,0 +1,21 @@
+<mat-toolbar class="navbar">
+  <mat-icon class="brand-icon">school</mat-icon>
+  <span class="brand-name">Placement Portal</span>
+  <span class="role-chip">{{ authService.userRole() }}</span>
+
+  <span class="spacer"></span>
+
+  <app-notification-bell />
+
+  <span class="user-name">{{ authService.currentUser()?.fullName }}</span>
+
+  <button mat-icon-button (click)="themeService.toggle()"
+          [matTooltip]="themeService.isDark() ? 'Light mode' : 'Dark mode'">
+    <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+  </button>
+
+  <button mat-button (click)="authService.logout()">
+    <mat-icon>logout</mat-icon>
+    Logout
+  </button>
+</mat-toolbar>

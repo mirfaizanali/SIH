@@ -1,0 +1,71 @@
+<div class="page-header">
+  <h1>My Applications</h1>
+  <p>Track all your job and internship applications.</p>
+</div>
+
+@if (errorMsg()) {
+  <div class="alert alert-error">{{ errorMsg() }}</div>
+}
+
+@if (loading()) {
+  <app-loading-spinner />
+} @else {
+  <mat-card>
+    <div class="table-header">
+      <span class="total-count">{{ totalElements() }} total applications</span>
+    </div>
+
+    @if (applications().length === 0) {
+      <div class="empty-state">
+        <p>You haven't applied to any jobs or internships yet.</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Position</th>
+              <th>Type</th>
+              <th>Applied On</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (app of applications(); track app.id) {
+              <tr>
+                <td>
+                  <div class="position-cell">
+                    <strong>{{ app.jobTitle || app.internshipTitle || 'N/A' }}</strong>
+                  </div>
+                </td>
+                <td>
+                  @if (app.jobId) {
+                    <span class="badge badge-info">Job</span>
+                  } @else {
+                    <span class="badge badge-warning">Internship</span>
+                  }
+                </td>
+                <td>{{ formatDate(app.appliedAt) }}</td>
+                <td><app-status-badge [status]="app.status" /></td>
+                <td>
+                  @if (app.status === 'SUBMITTED') {
+                    <button mat-flat-button color="warn"
+                            (click)="withdraw(app.id)"
+                            [disabled]="withdrawing() === app.id">
+                      {{ withdrawing() === app.id ? 'Withdrawing...' : 'Withdraw' }}
+                    </button>
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <mat-paginator [length]="totalElements()" [pageSize]="pageSize" [pageIndex]="currentPage()" (page)="onPageChange($event)" [pageSizeOptions]="[10, 25, 50]"></mat-paginator>
+    }
+  </mat-card>
+}

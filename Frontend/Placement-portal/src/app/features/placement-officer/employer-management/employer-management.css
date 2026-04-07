@@ -1,0 +1,35 @@
+/* ─── Summary Bar ─── */
+.summary-bar {
+  display: flex;
+  gap: 1.5rem;
+  padding: 0.875rem 1.25rem;
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+/* ─── Table ─── */
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+}
+
+.table { min-width: 700px; }
+
+/* ─── HR Info ─── */
+.hr-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.hr-info small {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.text-muted { color: var(--text-muted); }

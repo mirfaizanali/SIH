@@ -1,0 +1,59 @@
+<div class="register-page">
+  <h2>Create Account</h2>
+  <p class="subtitle">Join the Campus Placement Portal</p>
+
+  @if (error()) {
+    <div class="alert-error">{{ error() }}</div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Full Name</mat-label>
+      <input matInput formControlName="fullName" autocomplete="name">
+      <mat-icon matSuffix>person</mat-icon>
+      @if (form.get('fullName')?.invalid && form.get('fullName')?.touched) {
+        <mat-error>Full name is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" type="email" autocomplete="email">
+      <mat-icon matSuffix>email</mat-icon>
+      @if (form.get('email')?.invalid && form.get('email')?.touched) {
+        <mat-error>Valid email required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Password</mat-label>
+      <input matInput formControlName="password" type="password" autocomplete="new-password">
+      <mat-icon matSuffix>lock</mat-icon>
+      @if (form.get('password')?.invalid && form.get('password')?.touched) {
+        @if (form.get('password')?.errors?.['required']) {
+          <mat-error>Password is required</mat-error>
+        } @else if (form.get('password')?.errors?.['minlength']) {
+          <mat-error>Password must be at least 8 characters</mat-error>
+        }
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Role</mat-label>
+      <mat-select formControlName="role">
+        @for (r of roles; track r.value) {
+          <mat-option [value]="r.value">{{ r.label }}</mat-option>
+        }
+      </mat-select>
+      <mat-icon matSuffix>badge</mat-icon>
+    </mat-form-field>
+
+    <button mat-flat-button color="primary" type="submit" class="full-width submit-btn" [disabled]="loading()">
+      {{ loading() ? 'Creating account...' : 'Create Account' }}
+    </button>
+  </form>
+
+  <p class="form-footer">
+    Already have an account? <a routerLink="/auth/login">Sign in</a>
+  </p>
+</div>

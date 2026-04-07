@@ -1,0 +1,81 @@
+<div class="page-header">
+  <h1>Welcome, {{ userName() }}</h1>
+  <p>Your mentorship overview at a glance.</p>
+</div>
+
+@if (loading()) {
+  <app-loading-spinner />
+} @else {
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-icon class="stat-icon">groups</mat-icon>
+      <div class="stat-info">
+        <span class="stat-number">{{ menteesCount() }}</span>
+        <span class="stat-label">Total Mentees</span>
+      </div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <mat-icon class="stat-icon">assignment</mat-icon>
+      <div class="stat-info">
+        <span class="stat-number">{{ pendingReportsCount() }}</span>
+        <span class="stat-label">Pending Reports</span>
+      </div>
+    </mat-card>
+  </div>
+
+  <div class="dashboard-grid">
+    <mat-card>
+      <div class="card-header">
+        <h2>Reports Awaiting Review</h2>
+        <a [routerLink]="['/faculty/report-review']" mat-stroked-button>View All</a>
+      </div>
+
+      @if (recentReports().length === 0) {
+        <div class="empty-state">
+          <p>No pending reports to review.</p>
+        </div>
+      } @else {
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Type</th>
+              <th>Submitted</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (report of recentReports(); track report.id) {
+              <tr>
+                <td>{{ report.title }}</td>
+                <td><span class="badge badge-neutral">{{ report.reportType }}</span></td>
+                <td>{{ formatDate(report.submittedAt) }}</td>
+                <td><app-status-badge [status]="report.status" /></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </mat-card>
+
+    <mat-card class="quick-links">
+      <h2>Quick Links</h2>
+      <div class="action-list">
+        <a [routerLink]="['/faculty/mentees']" class="action-item">
+          <mat-icon class="action-icon">groups</mat-icon>
+          <div>
+            <strong>My Mentees</strong>
+            <p>View student profiles and progress</p>
+          </div>
+        </a>
+        <a [routerLink]="['/faculty/report-review']" class="action-item">
+          <mat-icon class="action-icon">assignment</mat-icon>
+          <div>
+            <strong>Review Reports</strong>
+            <p>Approve or request revision on reports</p>
+          </div>
+        </a>
+      </div>
+    </mat-card>
+  </div>
+}

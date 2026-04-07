@@ -1,0 +1,108 @@
+<div class="page-header">
+  <div>
+    <h1>Placement Drives</h1>
+    <p>Schedule and manage campus placement drives.</p>
+  </div>
+  <button mat-flat-button color="primary" (click)="showForm.set(!showForm())">
+    {{ showForm() ? 'Cancel' : '+ New Drive' }}
+  </button>
+</div>
+
+@if (successMsg()) {
+  <div class="alert alert-success">{{ successMsg() }}</div>
+}
+
+@if (showForm()) {
+  <mat-card class="form-card">
+    <h2>Create New Drive</h2>
+
+    @if (errorMsg()) {
+      <div class="alert alert-error">{{ errorMsg() }}</div>
+    }
+
+    <div class="form-row-2">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Drive Title *</mat-label>
+        <input matInput type="text" [value]="form().title"
+               (input)="updateForm('title', $any($event.target).value)"
+               placeholder="e.g. TCS Campus Drive 2025" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Drive Date *</mat-label>
+        <input matInput type="datetime-local" [value]="form().driveDate"
+               (change)="updateForm('driveDate', $any($event.target).value)" />
+      </mat-form-field>
+    </div>
+
+    <div class="form-row-2">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Venue</mat-label>
+        <input matInput type="text" [value]="form().venue"
+               (input)="updateForm('venue', $any($event.target).value)"
+               placeholder="e.g. Main Auditorium" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Mode</mat-label>
+        <mat-select [value]="form().mode"
+                    (selectionChange)="updateForm('mode', $event.value)">
+          @for (mode of modes; track mode) {
+            <mat-option [value]="mode">{{ mode.replace('_', ' ') }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput rows="4" [value]="form().description"
+                (input)="updateForm('description', $any($event.target).value)"
+                placeholder="Details about the drive, participating companies, eligibility..."></textarea>
+    </mat-form-field>
+
+    <div class="form-actions">
+      <button mat-flat-button color="primary" (click)="submit()" [disabled]="submitting()">
+        {{ submitting() ? 'Creating...' : 'Create Drive' }}
+      </button>
+    </div>
+  </mat-card>
+}
+
+@if (loading()) {
+  <app-loading-spinner />
+} @else {
+  @if (drives().length === 0) {
+    <mat-card class="empty-state">
+      <p>No drives scheduled. Create your first placement drive!</p>
+    </mat-card>
+  } @else {
+    <div class="drives-grid">
+      @for (drive of drives(); track drive.id) {
+        <mat-card class="drive-card">
+          <div class="drive-header">
+            <h3>{{ drive.title }}</h3>
+            <app-status-badge [status]="drive.status" />
+          </div>
+          <div class="drive-meta">
+            <div class="meta-row">
+              <mat-icon class="meta-icon">event</mat-icon>
+              <span>{{ formatDate(drive.driveDate) }}</span>
+            </div>
+            @if (drive.venue) {
+              <div class="meta-row">
+                <mat-icon class="meta-icon">location_on</mat-icon>
+                <span>{{ drive.venue }}</span>
+              </div>
+            }
+            <div class="meta-row">
+              <mat-icon class="meta-icon">computer</mat-icon>
+              <span class="badge badge-neutral">{{ drive.mode.replace('_', ' ') }}</span>
+            </div>
+          </div>
+          @if (drive.description) {
+            <p class="drive-description">{{ drive.description | slice:0:140 }}...</p>
+          }
+        </mat-card>
+      }
+    </div>
+  }
+}

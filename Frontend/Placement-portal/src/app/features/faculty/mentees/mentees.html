@@ -1,0 +1,109 @@
+<div class="page-header">
+  <h1>My Mentees</h1>
+  <p>View and monitor your assigned students.</p>
+</div>
+
+<mat-card class="search-bar">
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Search</mat-label>
+    <input matInput placeholder="Search by name, roll number, or department..."
+           [value]="searchQuery()" (input)="updateSearch($any($event.target).value)" />
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+</mat-card>
+
+@if (loading()) {
+  <app-loading-spinner />
+} @else {
+  @if (filteredMentees.length === 0) {
+    <mat-card class="empty-state">
+      <p>No mentees found.</p>
+    </mat-card>
+  } @else {
+    <div class="mentees-list">
+      @for (mentee of filteredMentees; track mentee.id) {
+        <mat-card class="mentee-card">
+          <div class="mentee-header" (click)="toggleExpand(mentee.id)">
+            <div class="mentee-avatar">{{ mentee.fullName.charAt(0) }}</div>
+            <div class="mentee-info">
+              <h3>{{ mentee.fullName }}</h3>
+              <div class="mentee-meta">
+                <span>{{ mentee.rollNumber }}</span>
+                <span>•</span>
+                <span>{{ mentee.department }}</span>
+                <span>•</span>
+                <span>Batch {{ mentee.batchYear }}</span>
+              </div>
+            </div>
+            <div class="mentee-badges">
+              <span class="cgpa-badge">CGPA: {{ mentee.cgpa }}</span>
+              @if (mentee.isPlaced) {
+                <span class="badge badge-success">Placed</span>
+              } @else {
+                <span class="badge badge-warning">Unplaced</span>
+              }
+            </div>
+            <button class="expand-btn" [class.expanded]="mentee.expanded">
+              <mat-icon>{{ mentee.expanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+            </button>
+          </div>
+
+          @if (mentee.expanded) {
+            <div class="mentee-details">
+              <div class="details-grid">
+                @if (mentee.email) {
+                  <div class="detail-item">
+                    <span class="detail-label">Email</span>
+                    <span>{{ mentee.email }}</span>
+                  </div>
+                }
+                @if (mentee.phone) {
+                  <div class="detail-item">
+                    <span class="detail-label">Phone</span>
+                    <span>{{ mentee.phone }}</span>
+                  </div>
+                }
+                @if (mentee.isPlaced && mentee.placedCompany) {
+                  <div class="detail-item">
+                    <span class="detail-label">Placed At</span>
+                    <span>{{ mentee.placedCompany }} — ₹{{ mentee.placementPackage }} LPA</span>
+                  </div>
+                }
+              </div>
+
+              <div class="enrollments-section">
+                <h4>Internship Enrollments</h4>
+                @if (mentee.loadingEnrollments) {
+                  <p class="loading-text">Loading enrollments...</p>
+                } @else if (mentee.enrollments.length === 0) {
+                  <p class="no-data">No internship enrollments found.</p>
+                } @else {
+                  <table class="inner-table">
+                    <thead>
+                      <tr>
+                        <th>Internship</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (enrollment of mentee.enrollments; track enrollment.id) {
+                        <tr>
+                          <td>{{ enrollment.internshipTitle }}</td>
+                          <td>{{ formatDate(enrollment.startDate) }}</td>
+                          <td>{{ formatDate(enrollment.endDate) }}</td>
+                          <td><app-status-badge [status]="enrollment.status" /></td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                }
+              </div>
+            </div>
+          }
+        </mat-card>
+      }
+    </div>
+  }
+}

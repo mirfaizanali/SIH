@@ -1,0 +1,104 @@
+<div class="page-header">
+  <h1>Company Profile</h1>
+  <p>Manage your company information and contact details.</p>
+</div>
+
+@if (loading()) {
+  <app-loading-spinner />
+} @else if (profile(); as p) {
+  <div class="profile-layout">
+    <mat-card class="company-header-card">
+      <div class="company-header">
+        <div class="company-logo">{{ p.companyName ? p.companyName.charAt(0) : '?' }}</div>
+        <div>
+          <h2>{{ p.companyName || 'Unnamed Company' }}</h2>
+          @if (p.isVerified) {
+            <span class="badge badge-success">Verified</span>
+          } @else {
+            <span class="badge badge-warning">Pending Verification</span>
+          }
+        </div>
+      </div>
+    </mat-card>
+
+    <mat-card class="edit-card">
+      <h2>Edit Profile</h2>
+
+      @if (successMsg()) {
+        <div class="alert alert-success">{{ successMsg() }}</div>
+      }
+      @if (errorMsg()) {
+        <div class="alert alert-error">{{ errorMsg() }}</div>
+      }
+
+      <div class="form-row-2">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Company Name</mat-label>
+          <input matInput type="text" [value]="editForm().companyName"
+                 (input)="updateForm('companyName', $any($event.target).value)"
+                 placeholder="e.g. Acme Corp" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Company Website</mat-label>
+          <input matInput type="url" [value]="editForm().companyWebsite"
+                 (input)="updateForm('companyWebsite', $any($event.target).value)"
+                 placeholder="https://yourcompany.com" />
+        </mat-form-field>
+      </div>
+
+      <div class="form-row-2">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Industry</mat-label>
+          <input matInput type="text" [value]="editForm().industry"
+                 (input)="updateForm('industry', $any($event.target).value)"
+                 placeholder="e.g. Information Technology" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Company Size</mat-label>
+          <mat-select [value]="editForm().companySize"
+                      (selectionChange)="updateForm('companySize', $event.value)">
+            <mat-option value="">Select size...</mat-option>
+            @for (size of companySizes; track size) {
+              <mat-option [value]="size">{{ size }} employees</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row-2">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>HR Contact Name</mat-label>
+          <input matInput type="text" [value]="editForm().hrContactName"
+                 (input)="updateForm('hrContactName', $any($event.target).value)"
+                 placeholder="HR Manager Name" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>HR Contact Phone</mat-label>
+          <input matInput type="tel" [value]="editForm().hrContactPhone"
+                 (input)="updateForm('hrContactPhone', $any($event.target).value)"
+                 placeholder="+91 98765 43210" />
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Location</mat-label>
+        <input matInput type="text" [value]="editForm().location"
+               (input)="updateForm('location', $any($event.target).value)"
+               placeholder="e.g. Mumbai, India" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Company Description</mat-label>
+        <textarea matInput rows="5" [value]="editForm().description"
+                  (input)="updateForm('description', $any($event.target).value)"
+                  placeholder="Tell students about your company, culture, and opportunities..."></textarea>
+      </mat-form-field>
+
+      <div class="form-actions">
+        <button mat-flat-button color="primary" (click)="save()" [disabled]="saving()">
+          {{ saving() ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+    </mat-card>
+  </div>
+}

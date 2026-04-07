@@ -1,0 +1,96 @@
+<div class="page-header">
+  <h1>Student Overview</h1>
+  <p>Browse and filter all registered students.</p>
+</div>
+
+<!-- Filters -->
+<mat-card class="filter-bar">
+  <div class="filter-row">
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Department</mat-label>
+      <input matInput [value]="filterDept()"
+             (input)="filterDept.set($any($event.target).value)"
+             placeholder="e.g. CSE" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Batch Year</mat-label>
+      <input matInput type="number" [value]="filterBatch()"
+             (input)="filterBatch.set($any($event.target).value)"
+             placeholder="e.g. 2025" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Placement Status</mat-label>
+      <mat-select [value]="filterPlaced()"
+                  (selectionChange)="filterPlaced.set($event.value)">
+        <mat-option value="">All</mat-option>
+        <mat-option value="true">Placed</mat-option>
+        <mat-option value="false">Unplaced</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <div class="filter-actions">
+      <button mat-flat-button color="primary" (click)="applyFilters()">Filter</button>
+      <button mat-stroked-button (click)="clearFilters()">Clear</button>
+    </div>
+  </div>
+</mat-card>
+
+@if (loading()) {
+  <app-loading-spinner />
+} @else {
+  <mat-card>
+    <div class="table-header">
+      <span>{{ totalElements() }} students found</span>
+    </div>
+
+    @if (students().length === 0) {
+      <div class="empty-state">
+        <p>No students match the selected filters.</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Roll Number</th>
+              <th>Department</th>
+              <th>Batch</th>
+              <th>CGPA</th>
+              <th>Status</th>
+              <th>Placed At</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (student of students(); track student.id) {
+              <tr>
+                <td>
+                  <div class="student-cell">
+                    <div class="avatar">{{ student.fullName.charAt(0) }}</div>
+                    <div>
+                      <strong>{{ student.fullName }}</strong>
+                      <small>{{ student.email }}</small>
+                    </div>
+                  </div>
+                </td>
+                <td>{{ student.rollNumber }}</td>
+                <td>{{ student.department }}</td>
+                <td>{{ student.batchYear }}</td>
+                <td><span class="cgpa">{{ student.cgpa }}</span></td>
+                <td>
+                  @if (student.isPlaced) {
+                    <span class="badge badge-success">Placed</span>
+                  } @else {
+                    <span class="badge badge-warning">Unplaced</span>
+                  }
+                </td>
+                <td>{{ student.placedCompany || '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <mat-paginator [length]="totalElements()" [pageSize]="pageSize" [pageIndex]="currentPage()" (page)="onPageChange($event)" [pageSizeOptions]="[10, 25, 50]"></mat-paginator>
+    }
+  </mat-card>
+}

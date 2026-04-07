@@ -1,0 +1,142 @@
+<div class="page-header">
+  <h1>Interview Management</h1>
+  <p>Schedule and track interview rounds for shortlisted candidates.</p>
+</div>
+
+@if (loading()) {
+  <app-loading-spinner />
+} @else {
+  <div class="interviews-layout">
+    <mat-card>
+      <h2>Shortlisted Candidates</h2>
+      @if (shortlisted().length === 0) {
+        <div class="empty-state">
+          <p>No shortlisted candidates yet. Shortlist applicants from the Applicants page.</p>
+        </div>
+      } @else {
+        <div class="candidates-list">
+          @for (app of shortlisted(); track app.id) {
+            <div class="candidate-item">
+              <div class="candidate-info">
+                <strong>{{ app.studentName }}</strong>
+                <span class="position">{{ app.jobTitle }}</span>
+              </div>
+              <div class="candidate-actions">
+                <app-status-badge [status]="app.status" />
+                <button mat-flat-button color="primary" (click)="openSchedule(app)">
+                  Schedule Interview
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </mat-card>
+
+    <mat-card>
+      <h2>Scheduled Interviews</h2>
+      @if (interviews().length === 0) {
+        <div class="empty-state">
+          <p>No interviews scheduled yet.</p>
+        </div>
+      } @else {
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Candidate</th>
+              <th>Round</th>
+              <th>Type</th>
+              <th>Scheduled At</th>
+              <th>Duration</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (iv of interviews(); track iv.id) {
+              <tr>
+                <td>{{ iv.applicationId }}</td>
+                <td>Round {{ iv.roundNumber }}</td>
+                <td><span class="badge badge-neutral">{{ iv.interviewType }}</span></td>
+                <td>{{ formatDate(iv.scheduledAt) }}</td>
+                <td>{{ iv.durationMins }} mins</td>
+                <td><app-status-badge [status]="iv.status" /></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </mat-card>
+  </div>
+}
+
+<!-- Schedule Modal -->
+@if (schedulingFor(); as app) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Schedule Interview — {{ app.studentName }}</h2>
+        <button class="modal-close" (click)="closeModal()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="modal-body">
+        @if (successMsg()) {
+          <div class="alert alert-success">{{ successMsg() }}</div>
+        }
+        @if (errorMsg()) {
+          <div class="alert alert-error">{{ errorMsg() }}</div>
+        }
+
+        <div class="form-row-2">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Round Number</mat-label>
+            <input matInput type="number" min="1" [value]="interviewForm().roundNumber"
+                   (input)="updateForm('roundNumber', +$any($event.target).value)" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Interview Type</mat-label>
+            <mat-select [value]="interviewForm().interviewType"
+                        (selectionChange)="updateForm('interviewType', $event.value)">
+              @for (type of interviewTypes; track type) {
+                <mat-option [value]="type">{{ type.replace('_', ' ') }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row-2">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Date & Time *</mat-label>
+            <input matInput type="datetime-local" [value]="interviewForm().scheduledAt"
+                   (change)="updateForm('scheduledAt', $any($event.target).value)" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Duration (minutes)</mat-label>
+            <input matInput type="number" min="15" step="15" [value]="interviewForm().durationMins"
+                   (input)="updateForm('durationMins', +$any($event.target).value)" />
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Meeting Link</mat-label>
+          <input matInput type="url" [value]="interviewForm().meetingLink"
+                 (input)="updateForm('meetingLink', $any($event.target).value)"
+                 placeholder="https://meet.google.com/..." />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Location (for in-person)</mat-label>
+          <input matInput type="text" [value]="interviewForm().location"
+                 (input)="updateForm('location', $any($event.target).value)"
+                 placeholder="Office address or room number" />
+        </mat-form-field>
+      </div>
+      <div class="modal-footer">
+        <button mat-stroked-button (click)="closeModal()">Cancel</button>
+        <button mat-flat-button color="primary" (click)="scheduleInterview()" [disabled]="scheduling()">
+          {{ scheduling() ? 'Scheduling...' : 'Schedule Interview' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

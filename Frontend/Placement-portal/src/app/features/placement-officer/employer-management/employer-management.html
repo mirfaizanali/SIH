@@ -1,0 +1,83 @@
+<div class="page-header">
+  <h1>Employer Management</h1>
+  <p>Review and verify employer registrations.</p>
+</div>
+
+@if (successMsg()) {
+  <div class="alert alert-success">{{ successMsg() }}</div>
+}
+@if (errorMsg()) {
+  <div class="alert alert-error">{{ errorMsg() }}</div>
+}
+
+@if (loading()) {
+  <app-loading-spinner />
+} @else {
+  <div class="summary-bar">
+    <span>{{ employers().length }} total employers</span>
+    <span>{{ verifiedCount() }} verified</span>
+    <span>{{ pendingCount() }} pending</span>
+  </div>
+
+  @if (employers().length === 0) {
+    <mat-card class="empty-state">
+      <p>No employers registered yet.</p>
+    </mat-card>
+  } @else {
+    <mat-card class="table-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Location</th>
+            <th>Industry</th>
+            <th>Size</th>
+            <th>HR Contact</th>
+            <th>Registered</th>
+            <th>Verification</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (employer of employers(); track employer.id) {
+            <tr>
+              <td>
+                <strong>{{ employer.companyName || 'Unnamed Company' }}</strong>
+              </td>
+              <td>{{ employer.location || '—' }}</td>
+              <td>{{ employer.industry || '—' }}</td>
+              <td>{{ employer.companySize || '—' }}</td>
+              <td>
+                <div class="hr-info">
+                  <span>{{ employer.hrContactName || '—' }}</span>
+                  @if (employer.hrContactPhone) {
+                    <small>{{ employer.hrContactPhone }}</small>
+                  }
+                </div>
+              </td>
+              <td>{{ formatDate(employer.createdAt) }}</td>
+              <td>
+                @if (employer.isVerified) {
+                  <span class="badge badge-success">Verified</span>
+                } @else {
+                  <span class="badge badge-warning">Pending</span>
+                }
+              </td>
+              <td>
+                @if (!employer.isVerified) {
+                  <button mat-flat-button color="primary"
+                          (click)="verify(employer.id)"
+                          [disabled]="verifyingId() === employer.id">
+                    {{ verifyingId() === employer.id ? 'Verifying...' : 'Verify' }}
+                  </button>
+                } @else {
+                  <span class="text-muted">—</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </mat-card>
+  }
+}

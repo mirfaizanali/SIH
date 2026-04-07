@@ -1,0 +1,180 @@
+<div class="page-header">
+  <div>
+    <h1>User Management</h1>
+    <p>Manage all portal user accounts.</p>
+  </div>
+  <button mat-flat-button color="primary" (click)="showAddForm.set(!showAddForm())">
+    {{ showAddForm() ? 'Cancel' : '+ Add User' }}
+  </button>
+</div>
+
+@if (showAddForm()) {
+  <mat-card class="add-user-form">
+    <h3>Create New User</h3>
+    <div class="form-grid">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Full Name</mat-label>
+        <input matInput type="text" [value]="newUser().fullName"
+               (input)="updateNewUser('fullName', $any($event.target).value)"
+               placeholder="Full name" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" [value]="newUser().email"
+               (input)="updateNewUser('email', $any($event.target).value)"
+               placeholder="email@example.com" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" [value]="newUser().password"
+               (input)="updateNewUser('password', $any($event.target).value)"
+               placeholder="Min 8 characters" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Role</mat-label>
+        <mat-select [value]="newUser().role"
+                    (selectionChange)="updateNewUser('role', $event.value)">
+          @for (role of roles; track role) {
+            <mat-option [value]="role">{{ role.replace('_', ' ') }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="form-actions">
+      <button mat-stroked-button (click)="showAddForm.set(false)">Cancel</button>
+      <button mat-flat-button color="primary" (click)="submitCreateUser()" [disabled]="creating()">
+        {{ creating() ? 'Creating...' : 'Create User' }}
+      </button>
+    </div>
+  </mat-card>
+}
+
+@if (successMsg()) {
+  <div class="alert alert-success">{{ successMsg() }}</div>
+}
+@if (errorMsg() && !resetPasswordUserId()) {
+  <div class="alert alert-error">{{ errorMsg() }}</div>
+}
+
+<!-- Filters -->
+<mat-card class="filter-bar">
+  <div class="filter-row">
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Role</mat-label>
+      <mat-select [value]="filterRole()"
+                  (selectionChange)="filterRole.set($event.value)">
+        <mat-option value="">All Roles</mat-option>
+        @for (role of roles; track role) {
+          <mat-option [value]="role">{{ role.replace('_', ' ') }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Status</mat-label>
+      <mat-select [value]="filterActive()"
+                  (selectionChange)="filterActive.set($event.value)">
+        <mat-option value="">All</mat-option>
+        <mat-option value="true">Active</mat-option>
+        <mat-option value="false">Inactive</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <div class="filter-actions">
+      <button mat-flat-button color="primary" (click)="applyFilters()">Filter</button>
+      <button mat-stroked-button (click)="clearFilters()">Clear</button>
+    </div>
+  </div>
+</mat-card>
+
+@if (loading()) {
+  <app-loading-spinner />
+} @else {
+  <mat-card>
+    <div class="table-header">
+      <span>{{ totalElements() }} users found</span>
+    </div>
+
+    @if (users().length === 0) {
+      <div class="empty-state">
+        <p>No users match the selected filters.</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Role</th>
+              <th>Joined</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (user of users(); track user.id) {
+              <tr>
+                <td>
+                  <div class="user-cell">
+                    <div class="avatar">{{ user.fullName.charAt(0) }}</div>
+                    <div>
+                      <strong>{{ user.fullName }}</strong>
+                      <small>{{ user.email }}</small>
+                    </div>
+                  </div>
+                </td>
+                <td><span [class]="roleBadgeClass(user.role)">{{ user.role.replace('_', ' ') }}</span></td>
+                <td>{{ formatDate(user.createdAt) }}</td>
+                <td>
+                  @if (user.isActive) {
+                    <span class="badge badge-success">Active</span>
+                  } @else {
+                    <span class="badge badge-danger">Inactive</span>
+                  }
+                </td>
+                <td>
+                  <div class="action-buttons">
+                    <button mat-stroked-button
+                            (click)="toggleActive(user)"
+                            [disabled]="processingId() === user.id">
+                      {{ user.isActive ? 'Deactivate' : 'Activate' }}
+                    </button>
+                    <button class="btn btn-warning btn-sm" (click)="openResetPassword(user.id)">
+                      Reset Password
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Inline reset password form -->
+              @if (resetPasswordUserId() === user.id) {
+                <tr class="reset-row">
+                  <td colspan="5">
+                    <div class="reset-form">
+                      <mat-form-field appearance="outline" class="reset-field">
+                        <mat-label>New Password</mat-label>
+                        <input matInput type="password" [value]="newPassword()"
+                               (input)="newPassword.set($any($event.target).value)"
+                               placeholder="Enter new password (min 8 chars)" />
+                      </mat-form-field>
+                      @if (errorMsg()) {
+                        <div class="inline-error">{{ errorMsg() }}</div>
+                      }
+                      <div class="reset-actions">
+                        <button mat-stroked-button (click)="resetPasswordUserId.set(null)">Cancel</button>
+                        <button class="btn btn-warning btn-sm" (click)="submitResetPassword()"
+                                [disabled]="processingId() === user.id">
+                          {{ processingId() === user.id ? 'Resetting...' : 'Reset Password' }}
+                        </button>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <mat-paginator [length]="totalElements()" [pageSize]="pageSize" [pageIndex]="currentPage()" (page)="onPageChange($event)" [pageSizeOptions]="[10, 25, 50]"></mat-paginator>
+    }
+  </mat-card>
+}

@@ -1,0 +1,101 @@
+<div class="page-header">
+  <div>
+    <h1>Internship Reports</h1>
+    <p>Submit and track your internship progress reports.</p>
+  </div>
+  <button mat-flat-button color="primary" (click)="showForm.set(!showForm())">
+    {{ showForm() ? 'Cancel' : '+ New Report' }}
+  </button>
+</div>
+
+@if (successMsg()) {
+  <div class="alert alert-success">{{ successMsg() }}</div>
+}
+
+@if (showForm()) {
+  <mat-card class="report-form">
+    <h2>Submit New Report</h2>
+
+    @if (errorMsg()) {
+      <div class="alert alert-error">{{ errorMsg() }}</div>
+    }
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Enrollment *</mat-label>
+      <mat-select [value]="newReport().enrollmentId"
+                  (selectionChange)="updateForm('enrollmentId', $event.value)">
+        <mat-option value="">-- Select Internship Enrollment --</mat-option>
+        @for (enrollment of enrollments(); track enrollment.id) {
+          <mat-option [value]="enrollment.id">{{ enrollment.internshipTitle }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Title *</mat-label>
+        <input matInput type="text" [value]="newReport().title"
+               (input)="updateForm('title', $any($event.target).value)"
+               placeholder="Report title" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Report Type *</mat-label>
+        <mat-select [value]="newReport().reportType"
+                    (selectionChange)="updateForm('reportType', $event.value)">
+          @for (type of reportTypes; track type) {
+            <mat-option [value]="type">{{ type }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Content *</mat-label>
+      <textarea matInput rows="8" [value]="newReport().content"
+                (input)="updateForm('content', $any($event.target).value)"
+                placeholder="Describe your progress, activities, and learnings..."></textarea>
+    </mat-form-field>
+
+    <div class="form-actions">
+      <button mat-flat-button color="primary" (click)="submitReport()" [disabled]="submitting()">
+        {{ submitting() ? 'Submitting...' : 'Submit Report' }}
+      </button>
+    </div>
+  </mat-card>
+}
+
+@if (loading()) {
+  <app-loading-spinner />
+} @else {
+  <div class="reports-list">
+    @if (reports().length === 0) {
+      <mat-card class="empty-state">
+        <p>No reports submitted yet. Click "New Report" to get started.</p>
+      </mat-card>
+    } @else {
+      @for (report of reports(); track report.id) {
+        <mat-card class="report-card">
+          <div class="report-header">
+            <div>
+              <h3>{{ report.title }}</h3>
+              <div class="report-meta">
+                <span class="badge badge-neutral">{{ report.reportType }}</span>
+                <span>Submitted: {{ formatDate(report.submittedAt) }}</span>
+              </div>
+            </div>
+            <app-status-badge [status]="report.status" />
+          </div>
+
+          <p class="report-preview">{{ report.content | slice:0:200 }}{{ report.content.length > 200 ? '...' : '' }}</p>
+
+          @if (report.reviewerComments && (report.status === 'APPROVED' || report.status === 'REVISION_REQUESTED')) {
+            <div class="reviewer-comments" [class.approved]="report.status === 'APPROVED'" [class.revision]="report.status === 'REVISION_REQUESTED'">
+              <strong>Reviewer Comments:</strong>
+              <p>{{ report.reviewerComments }}</p>
+            </div>
+          }
+        </mat-card>
+      }
+    }
+  </div>
+}

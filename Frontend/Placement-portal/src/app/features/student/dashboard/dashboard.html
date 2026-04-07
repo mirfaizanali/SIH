@@ -1,0 +1,112 @@
+<div class="page-header">
+  <h1>Welcome back, {{ userName() }}!</h1>
+  <p class="subtitle">Here's your placement activity at a glance.</p>
+</div>
+
+@if (loading()) {
+  <app-loading-spinner />
+} @else {
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-icon class="stat-icon applications-icon">assignment</mat-icon>
+      <div class="stat-info">
+        <span class="stat-number">{{ stats().applications }}</span>
+        <span class="stat-label">Applications Submitted</span>
+      </div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <mat-icon class="stat-icon interviews-icon">event</mat-icon>
+      <div class="stat-info">
+        <span class="stat-number">{{ stats().interviews }}</span>
+        <span class="stat-label">Interviews Scheduled</span>
+      </div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <mat-icon class="stat-icon jobs-icon">work</mat-icon>
+      <div class="stat-info">
+        <span class="stat-number">{{ stats().activeJobs }}</span>
+        <span class="stat-label">Active Jobs</span>
+      </div>
+    </mat-card>
+  </div>
+
+  <div class="dashboard-grid">
+    <mat-card class="recent-applications">
+      <div class="card-header">
+        <h2>Recent Applications</h2>
+        <a [routerLink]="['/student/applications']" mat-stroked-button>View All</a>
+      </div>
+
+      @if (recentApplications().length === 0) {
+        <div class="empty-state">
+          <p>No applications yet. Start exploring jobs!</p>
+          <a [routerLink]="['/student/jobs']" mat-flat-button color="primary">Browse Jobs</a>
+        </div>
+      } @else {
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Job Title</th>
+              <th>Company</th>
+              <th>Applied</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (app of recentApplications(); track app.id) {
+              <tr>
+                <td>{{ app.jobTitle || app.internshipTitle }}</td>
+                <td>—</td>
+                <td>{{ formatDate(app.appliedAt) }}</td>
+                <td><app-status-badge [status]="app.status" /></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </mat-card>
+
+    <div class="quick-links">
+      <mat-card>
+        <h2>Quick Actions</h2>
+        <div class="action-list">
+          <a [routerLink]="['/student/jobs']" class="action-item">
+            <mat-icon class="action-icon">search</mat-icon>
+            <div>
+              <strong>Search Jobs</strong>
+              <p>Find your next opportunity</p>
+            </div>
+          </a>
+          <a [routerLink]="['/student/recommendations']" class="action-item">
+            <mat-icon class="action-icon">star</mat-icon>
+            <div>
+              <strong>Recommendations</strong>
+              <p>Jobs matched to your profile</p>
+            </div>
+          </a>
+          <a [routerLink]="['/student/internships']" class="action-item">
+            <mat-icon class="action-icon">business</mat-icon>
+            <div>
+              <strong>Internships</strong>
+              <p>Explore internship opportunities</p>
+            </div>
+          </a>
+          <a [routerLink]="['/student/resume']" class="action-item">
+            <mat-icon class="action-icon">description</mat-icon>
+            <div>
+              <strong>Manage Resume</strong>
+              <p>Upload or update your resume</p>
+            </div>
+          </a>
+          <a [routerLink]="['/student/profile']" class="action-item">
+            <mat-icon class="action-icon">person</mat-icon>
+            <div>
+              <strong>Edit Profile</strong>
+              <p>Keep your profile updated</p>
+            </div>
+          </a>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+}

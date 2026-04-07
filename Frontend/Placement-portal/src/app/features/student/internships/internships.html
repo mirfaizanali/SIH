@@ -1,0 +1,106 @@
+<div class="page-header">
+  <h1>Internships</h1>
+  <p>Explore internship opportunities and build your career.</p>
+</div>
+
+@if (loading()) {
+  <app-loading-spinner />
+} @else {
+  @if (internships().length === 0) {
+    <mat-card class="empty-state">
+      <p>No internships available at the moment. Check back later!</p>
+    </mat-card>
+  } @else {
+    <div class="internships-grid">
+      @for (internship of internships(); track internship.id) {
+        <mat-card class="internship-card">
+          <div class="card-top">
+            <div>
+              <h3>{{ internship.title }}</h3>
+              <p class="company">{{ internship.companyName }}</p>
+            </div>
+            <div class="badges">
+              @if (internship.isRemote) {
+                <span class="badge badge-info">Remote</span>
+              }
+              @if (isApplied(internship.id)) {
+                <span class="badge badge-success">Applied</span>
+              }
+            </div>
+          </div>
+
+          <div class="internship-meta">
+            <div class="meta-row">
+              <span><mat-icon class="meta-icon">location_on</mat-icon> {{ internship.location }}</span>
+              <span><mat-icon class="meta-icon">schedule</mat-icon> {{ internship.durationMonths }} months</span>
+            </div>
+            <div class="meta-row">
+              <span><mat-icon class="meta-icon">payments</mat-icon> ₹{{ internship.stipend }}/month</span>
+              <span><mat-icon class="meta-icon">bar_chart</mat-icon> Min CGPA: {{ internship.minCgpa }}</span>
+            </div>
+            <div class="meta-row">
+              <span><mat-icon class="meta-icon">event</mat-icon> Deadline: {{ formatDate(internship.applicationDeadline) }}</span>
+            </div>
+          </div>
+
+          @if (internship.description) {
+            <p class="description">{{ internship.description | slice:0:120 }}...</p>
+          }
+
+          <div class="card-footer">
+            <app-status-badge [status]="internship.status" />
+            @if (!isApplied(internship.id) && internship.status === 'ACTIVE') {
+              <button mat-flat-button color="primary" (click)="openApply(internship)">Apply Now</button>
+            } @else if (isApplied(internship.id)) {
+              <span class="applied-text">Applied</span>
+            }
+          </div>
+        </mat-card>
+      }
+    </div>
+  }
+}
+
+<!-- Apply Modal -->
+@if (selectedInternship(); as internship) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Apply — {{ internship.title }}</h2>
+        <button class="modal-close" (click)="closeModal()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="modal-body">
+        @if (applySuccess()) {
+          <div class="alert alert-success">{{ applySuccess() }}</div>
+        }
+        @if (applyError()) {
+          <div class="alert alert-error">{{ applyError() }}</div>
+        }
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Select Resume *</mat-label>
+          <mat-select [value]="applyForm().resumeId"
+                      (selectionChange)="updateForm('resumeId', $event.value)">
+            <mat-option value="">-- Choose resume --</mat-option>
+            @for (r of resumes(); track r.id) {
+              <mat-option [value]="r.id">{{ r.fileName }}{{ r.isPrimary ? ' (Primary)' : '' }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Cover Letter (optional)</mat-label>
+          <textarea matInput rows="4" [value]="applyForm().coverLetter"
+                    (input)="updateForm('coverLetter', $any($event.target).value)"
+                    placeholder="Why are you interested in this internship?"></textarea>
+        </mat-form-field>
+      </div>
+      <div class="modal-footer">
+        <button mat-stroked-button (click)="closeModal()">Cancel</button>
+        <button mat-flat-button color="primary" (click)="submitApply()" [disabled]="applying()">
+          {{ applying() ? 'Submitting...' : 'Submit' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

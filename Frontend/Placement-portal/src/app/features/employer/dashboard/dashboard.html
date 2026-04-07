@@ -1,0 +1,103 @@
+<div class="page-header">
+  <h1>Employer Dashboard</h1>
+  <p>Manage your job postings and track applicants.</p>
+</div>
+
+@if (loading()) {
+  <app-loading-spinner />
+} @else {
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-icon class="stat-icon">work</mat-icon>
+      <div class="stat-info">
+        <span class="stat-number">{{ activeJobs() }}</span>
+        <span class="stat-label">Active Jobs</span>
+      </div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <mat-icon class="stat-icon">assignment</mat-icon>
+      <div class="stat-info">
+        <span class="stat-number">{{ totalApplications() }}</span>
+        <span class="stat-label">Total Applications</span>
+      </div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <mat-icon class="stat-icon">event</mat-icon>
+      <div class="stat-info">
+        <span class="stat-number">{{ pendingInterviews() }}</span>
+        <span class="stat-label">Pending Interviews</span>
+      </div>
+    </mat-card>
+  </div>
+
+  <div class="dashboard-grid">
+    <mat-card>
+      <div class="card-header">
+        <h2>Recent Applications</h2>
+        <a [routerLink]="['/employer/applicants']" mat-stroked-button>View All</a>
+      </div>
+
+      @if (recentApplications().length === 0) {
+        <div class="empty-state">
+          <p>No applications yet.</p>
+          <a [routerLink]="['/employer/post-job']" mat-flat-button color="primary">Post a Job</a>
+        </div>
+      } @else {
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Candidate</th>
+              <th>Position</th>
+              <th>Applied</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (app of recentApplications(); track app.id) {
+              <tr>
+                <td>{{ app.studentName }}</td>
+                <td>{{ app.jobTitle }}</td>
+                <td>{{ formatDate(app.appliedAt) }}</td>
+                <td><app-status-badge [status]="app.status" /></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </mat-card>
+
+    <mat-card class="quick-links">
+      <h2>Quick Actions</h2>
+      <div class="action-list">
+        <a [routerLink]="['/employer/post-job']" class="action-item">
+          <mat-icon class="action-icon">add_circle</mat-icon>
+          <div>
+            <strong>Post New Job</strong>
+            <p>Create a new job listing</p>
+          </div>
+        </a>
+        <a [routerLink]="['/employer/applicants']" class="action-item">
+          <mat-icon class="action-icon">groups</mat-icon>
+          <div>
+            <strong>Review Applicants</strong>
+            <p>Manage applications</p>
+          </div>
+        </a>
+        <a [routerLink]="['/employer/interviews']" class="action-item">
+          <mat-icon class="action-icon">event</mat-icon>
+          <div>
+            <strong>Schedule Interviews</strong>
+            <p>Set up interview rounds</p>
+          </div>
+        </a>
+        <a [routerLink]="['/employer/profile']" class="action-item">
+          <mat-icon class="action-icon">business</mat-icon>
+          <div>
+            <strong>Company Profile</strong>
+            <p>Update company information</p>
+          </div>
+        </a>
+      </div>
+    </mat-card>
+  </div>
+}

@@ -1,0 +1,68 @@
+<div class="page-header">
+  <h1>System Configuration</h1>
+  <p>Manage application-wide configuration settings.</p>
+</div>
+
+@if (successMsg()) {
+  <div class="alert alert-success">{{ successMsg() }}</div>
+}
+@if (errorMsg()) {
+  <div class="alert alert-error">{{ errorMsg() }}</div>
+}
+
+@if (loading()) {
+  <app-loading-spinner />
+} @else {
+  <mat-card>
+    @if (configs().length === 0) {
+      <div class="empty-state">
+        <p>No configuration entries found.</p>
+      </div>
+    } @else {
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Key</th>
+            <th>Value</th>
+            <th>Description</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (config of configs(); track config.key) {
+            <tr>
+              <td><code class="config-key">{{ config.key }}</code></td>
+              <td>
+                @if (editingKey() === config.key) {
+                  <mat-form-field appearance="outline" class="inline-field">
+                    <input matInput [value]="editValue()"
+                           (input)="editValue.set($any($event.target).value)"
+                           (keydown.enter)="saveConfig(config.key)"
+                           (keydown.escape)="cancelEdit()" />
+                  </mat-form-field>
+                } @else {
+                  <span class="config-value">{{ config.value }}</span>
+                }
+              </td>
+              <td class="desc-cell">{{ config.description || '—' }}</td>
+              <td>
+                @if (editingKey() === config.key) {
+                  <div class="edit-actions">
+                    <button mat-flat-button color="primary"
+                            (click)="saveConfig(config.key)"
+                            [disabled]="savingKey() === config.key">
+                      {{ savingKey() === config.key ? 'Saving...' : 'Save' }}
+                    </button>
+                    <button mat-stroked-button (click)="cancelEdit()">Cancel</button>
+                  </div>
+                } @else {
+                  <button mat-stroked-button (click)="startEdit(config)">Edit</button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </mat-card>
+}

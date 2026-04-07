@@ -1,0 +1,90 @@
+<div class="page-header">
+  <h1>Placement Officer Dashboard</h1>
+  <p>Campus placement statistics and management overview.</p>
+</div>
+
+@if (loading()) {
+  <app-loading-spinner />
+} @else if (analytics(); as a) {
+  <!-- Hero placement rate — kept as div (gradient background) -->
+  <div class="placement-hero card">
+    <div class="hero-content">
+      <div class="rate-circle">
+        <span class="rate-value">{{ a.placementRate | number:'1.1-1' }}%</span>
+        <span class="rate-label">Placement Rate</span>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-value">{{ a.placedStudents }}</span>
+          <span class="hero-stat-label">Students Placed</span>
+        </div>
+        <div class="divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-value">{{ a.totalStudents }}</span>
+          <span class="hero-stat-label">Total Students</span>
+        </div>
+        <div class="divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-value">{{ formatPackage(a.averagePackage) }}</span>
+          <span class="hero-stat-label">Avg. Package</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats grid -->
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-icon class="stat-icon">work</mat-icon>
+      <div class="stat-info">
+        <span class="stat-number">{{ a.activeJobs }}</span>
+        <span class="stat-label">Active Jobs</span>
+      </div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <mat-icon class="stat-icon">account_balance</mat-icon>
+      <div class="stat-info">
+        <span class="stat-number">{{ a.scheduledDrives }}</span>
+        <span class="stat-label">Scheduled Drives</span>
+      </div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <mat-icon class="stat-icon">school</mat-icon>
+      <div class="stat-info">
+        <span class="stat-number">{{ a.totalStudents }}</span>
+        <span class="stat-label">Registered Students</span>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Quick links -->
+  <mat-card class="quick-actions">
+    <h2>Quick Actions</h2>
+    <div class="action-grid">
+      <a [routerLink]="['/officer/drives']" class="action-card">
+        <mat-icon class="action-icon">event</mat-icon>
+        <strong>Manage Drives</strong>
+        <p>Schedule campus placement drives</p>
+      </a>
+      <a [routerLink]="['/officer/employers']" class="action-card">
+        <mat-icon class="action-icon">business</mat-icon>
+        <strong>Employer Management</strong>
+        <p>Verify and manage employer profiles</p>
+      </a>
+      <a [routerLink]="['/officer/analytics']" class="action-card">
+        <mat-icon class="action-icon">bar_chart</mat-icon>
+        <strong>Full Analytics</strong>
+        <p>Detailed placement statistics</p>
+      </a>
+      <a [routerLink]="['/officer/students']" class="action-card">
+        <mat-icon class="action-icon">groups</mat-icon>
+        <strong>Student Overview</strong>
+        <p>Browse and filter student profiles</p>
+      </a>
+    </div>
+  </mat-card>
+}
+
+@if (errorMsg()) {
+  <div class="alert alert-error">{{ errorMsg() }}</div>
+}

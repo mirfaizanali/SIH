@@ -1,0 +1,73 @@
+<div class="page-header">
+  <h1>Audit Logs</h1>
+  <p>View system activity and user action history.</p>
+</div>
+
+<!-- Filters -->
+<mat-card class="filter-bar">
+  <div class="filter-row">
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Filter by Action</mat-label>
+      <mat-select [value]="filterAction()"
+                  (selectionChange)="filterAction.set($event.value)">
+        <mat-option value="">All Actions</mat-option>
+        @for (action of commonActions; track action) {
+          <mat-option [value]="action">{{ action }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <div class="filter-actions">
+      <button mat-flat-button color="primary" (click)="applyFilter()">Filter</button>
+      <button mat-stroked-button (click)="clearFilter()">Clear</button>
+    </div>
+  </div>
+</mat-card>
+
+@if (loading()) {
+  <app-loading-spinner />
+} @else {
+  <mat-card>
+    <div class="table-header">
+      <span>{{ totalElements() }} log entries</span>
+    </div>
+
+    @if (logs().length === 0) {
+      <div class="empty-state">
+        <p>No audit logs found.</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>User</th>
+              <th>Action</th>
+              <th>Entity</th>
+              <th>Entity ID</th>
+              <th>IP Address</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (log of logs(); track log.id) {
+              <tr>
+                <td class="timestamp">{{ formatDate(log.timestamp) }}</td>
+                <td>
+                  <div class="user-cell">
+                    <span>{{ log.userEmail || log.userId }}</span>
+                  </div>
+                </td>
+                <td><span [class]="actionBadgeClass(log.action)">{{ log.action }}</span></td>
+                <td><span class="entity-type">{{ log.entityType || '—' }}</span></td>
+                <td><code class="entity-id">{{ log.entityId || '—' }}</code></td>
+                <td class="ip-address">{{ log.ipAddress || '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <mat-paginator [length]="totalElements()" [pageSize]="pageSize" [pageIndex]="currentPage()" (page)="onPageChange($event)" [pageSizeOptions]="[10, 25, 50]"></mat-paginator>
+    }
+  </mat-card>
+}

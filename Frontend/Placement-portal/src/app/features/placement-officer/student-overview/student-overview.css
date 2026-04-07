@@ -1,0 +1,63 @@
+/* ─── Filter Bar ─── */
+.filter-bar { margin-bottom: 1.5rem; }
+
+.filter-row {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.filter-field { flex: 1; min-width: 160px; }
+
+.filter-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding-bottom: 1.25rem;
+}
+
+/* ─── Table ─── */
+.table-header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 0 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.table-wrapper { overflow-x: auto; border-radius: var(--radius-sm); }
+.table { min-width: 700px; }
+
+/* ─── Student Cell ─── */
+.student-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  background: var(--primary-gradient);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+.student-cell strong { display: block; font-size: 0.9rem; }
+.student-cell small { font-size: 0.75rem; color: var(--text-muted); }
+
+.cgpa {
+  font-weight: 800;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

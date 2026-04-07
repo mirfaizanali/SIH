@@ -1,0 +1,309 @@
+================================================================================
+       CAMPUS INTERNSHIP & PLACEMENT PORTAL — COMPLETE PROJECT OVERVIEW
+================================================================================
+
+Tech Stack:
+  Backend  : Spring Boot 4.0.5, Java 21, Spring Security 6, JWT (jjwt 0.12.6)
+  Frontend : Angular 20.3.0, Standalone Components, Signals, RxJS 7.8
+  Database : MySQL 8.x (Hibernate ddl-auto manages schema)
+  Cache    : Caffeine (Spring Cache)
+  Real-time: STOMP over SockJS (WebSocket)
+  Auth     : JWT access token (15 min) + refresh token cookie (7 day, SHA-256 hashed)
+
+================================================================================
+                         ROLES & PERMISSIONS
+================================================================================
+
+  ADMIN > PLACEMENT_OFFICER > FACULTY_MENTOR > STUDENT
+  EMPLOYER (flat peer, no hierarchy with academic roles)
+
+  STUDENT            : Apply to jobs, upload resume, view recommendations, submit reports
+  EMPLOYER           : Post jobs/internships, manage applicants, schedule interviews
+  FACULTY_MENTOR     : View mentees, review internship reports
+  PLACEMENT_OFFICER  : Manage placement drives, verify employers, view analytics
+  ADMIN              : Manage users, system config, audit logs (inherits all permissions)
+
+================================================================================
+                         API ENDPOINTS (40+)
+================================================================================
+
+--- AUTH (/api/auth) — PUBLIC ---
+  POST /login              Authenticate (email/password) → access token + refresh cookie
+  POST /register           Create account + role profile shell → tokens
+  POST /refresh            Rotate refresh token → new access + refresh tokens
+  POST /logout             Revoke all refresh tokens, clear cookie
+
+--- STUDENT (/api/students) ---
+  GET  /me                 Own profile
+  PUT  /me                 Update profile (phone, LinkedIn, GitHub, bio, preferences)
+  GET  /{id}               View student by ID (officer/admin)
+  GET  /                   Paginated list, filter by department/batch/placed (officer/admin)
+  PUT  /{id}/mentor        Assign faculty mentor (officer/admin)
+
+--- FACULTY (/api/faculty) ---
+  GET  /me                 Own profile
+  GET  /me/mentees         List assigned mentees
+  GET  /{id}               View faculty by ID (officer/admin)
+
+--- EMPLOYER (/api/employers) ---
+  GET  /me                 Own profile
+  PUT  /me                 Update profile (company info)
+  GET  /                   Paginated list (officer/admin)
+  PUT  /{id}/verify        Mark employer verified (officer/admin)
+
+--- JOBS (/api/jobs) ---
+  POST /                   Create job (employer, defaults to DRAFT)
+  GET  /                   Public: list active jobs, filter by location/experience
+  GET  /{id}               Public: get job details
+  GET  /my                 Employer's own jobs
+  PUT  /{id}               Update job (employer, owner check)
+  PATCH /{id}/status       Update job status (employer/officer)
+
+--- INTERNSHIPS (/api/internships) ---
+  POST /                   Create internship (employer, defaults to DRAFT)
+  GET  /                   Public: list active internships
+  GET  /{id}               Public: get internship details
+  GET  /my                 Employer's own internships
+  PATCH /{id}/status       Update status (employer/officer)
+
+--- APPLICATIONS (/api/applications) ---
+  POST /                   Apply to job/internship (student, validates CGPA + duplicate)
+  GET  /my                 Student's own applications
+  GET  /{id}               Single application (ownership check)
+  GET  /job/{jobId}        All applications for a job (employer/officer)
+  PATCH /{id}/status       Update status (employer/officer)
+  DELETE /{id}             Withdraw application (student, only if SUBMITTED)
+
+--- INTERVIEWS (/api/interviews) ---
+  POST /                   Schedule interview (employer)
+  GET  /{id}               Get interview details
+  GET  /application/{id}   All rounds for an application
+  PATCH /{id}/feedback     Record feedback + score (employer)
+  DELETE /{id}             Cancel interview (employer)
+
+--- PLACEMENT DRIVES (/api/drives) ---
+  POST /                   Create drive (officer)
+  GET  /                   List drives, filter by status
+  GET  /{id}               Drive details
+  PATCH /{id}/status       Update drive status (officer)
+
+--- RESUMES (/api/resumes) ---
+  POST /                   Upload resume (student, PDF/DOC/DOCX, max 10MB)
+  GET  /my                 Student's resumes
+  PATCH /{id}/primary      Set as primary resume
+  DELETE /{id}             Delete resume file + record
+
+--- NOTIFICATIONS (/api/notifications) ---
+  GET  /                   Paginated notifications (newest first)
+  PATCH /{id}/read         Mark as read
+  PATCH /read-all          Mark all as read
+  GET  /unread-count       Unread count
+
+--- RECOMMENDATIONS (/api/recommendations) ---
+  GET  /jobs?limit=10      AI job recommendations for student (scoring engine)
+  GET  /students?jobId=X   Top candidates for a job (employer/officer)
+
+--- ANALYTICS (/api/analytics) ---
+  GET  /dashboard          Aggregated placement stats (cached 15 min, officer/admin)
+  POST /refresh            Evict analytics cache (admin)
+
+--- ADMIN (/api/admin) ---
+  GET  /users              Paginated users, filter by role/active
+  POST /users              Create user + profile shell
+  GET  /users/{id}         Get user
+  PATCH /users/{id}/activate     Activate user
+  PATCH /users/{id}/deactivate   Deactivate user
+  POST /users/{id}/reset-password  Reset password
+  GET  /configs            All system config key-value pairs
+  PUT  /configs/{key}      Set/update config
+  DELETE /configs/{key}    Delete config
+  GET  /audit-logs         Paginated audit logs
+
+================================================================================
+                         DATABASE ENTITIES (14)
+================================================================================
+
+  users                  id, email, password_hash, full_name, role, oauth2_*, is_active
+  student_profiles       id, user_id, roll_number, department, batch_year, cgpa, phone,
+                         linkedin_url, github_url, bio, preferences, is_placed,
+                         placement_package, placed_company, faculty_mentor_id
+  employer_profiles      id, user_id, company_name, website, industry, company_size,
+                         hr_contact_*, is_verified, logo_url, description
+  faculty_profiles       id, user_id, employee_id, department, designation, phone
+  placement_officer_profiles  id, user_id, employee_id, department, phone
+  jobs                   id, employer_id, title, description, location, job_type,
+                         experience_level, min_cgpa, salary_min/max, openings_count,
+                         application_deadline, status
+  internships            id, employer_id, title, description, duration_months, stipend,
+                         location, is_remote, min_cgpa, application_deadline, status
+  applications           id, student_id, job_id, internship_id, resume_id,
+                         cover_letter, status, applied_at
+  interviews             id, application_id, round_number, interview_type,
+                         scheduled_at, duration_mins, meeting_link, location,
+                         status, feedback, score
+  placement_drives       id, employer_id, organized_by_id, title, drive_date,
+                         venue, mode, status, description + drive_jobs (join table)
+  resumes                id, student_profile_id, file_name, storage_path,
+                         file_size_bytes, content_type, is_primary
+  notifications          id, user_id, type, title, message, reference_type,
+                         reference_id, is_read
+  refresh_tokens         id, user_id, token_hash, expires_at, is_revoked
+  audit_logs             id (BIGINT), user_id, action, ip_address, user_agent
+  system_configs         config_key (PK), config_value
+
+  Join tables: student_skills, job_skills, drive_jobs
+
+================================================================================
+                         ENUMS
+================================================================================
+
+  Role              : STUDENT, FACULTY_MENTOR, PLACEMENT_OFFICER, EMPLOYER, ADMIN
+  JobType           : FULL_TIME, INTERNSHIP, PART_TIME, CONTRACT
+  ExperienceLevel   : FRESHER, ENTRY_LEVEL, MID_LEVEL, SENIOR
+  JobStatus         : DRAFT, ACTIVE, CLOSED
+  InternshipStatus  : DRAFT, ACTIVE, CLOSED
+  ApplicationStatus : SUBMITTED, SHORTLISTED, REJECTED, OFFERED, WITHDRAWN, HIRED
+  InterviewType     : TECHNICAL, HR, GROUP_DISCUSSION, OTHER
+  InterviewStatus   : SCHEDULED, COMPLETED, CANCELLED
+  CompanySize       : STARTUP, SMALL, MEDIUM, LARGE, ENTERPRISE
+  DriveMode         : ONLINE, OFFLINE, HYBRID
+  DriveStatus       : SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED
+  NotificationType  : APPLICATION_STATUS, INTERVIEW_SCHEDULED, NEW_JOB,
+                      REPORT_FEEDBACK, DRIVE_ANNOUNCEMENT
+  EnrollmentStatus  : ONGOING, COMPLETED, WITHDRAWN
+  ProficiencyLevel  : BEGINNER, INTERMEDIATE, ADVANCED, EXPERT
+  ReportType        : WEEKLY, MONTHLY, FINAL
+  ReportStatus      : DRAFT, SUBMITTED, APPROVED, REJECTED
+
+================================================================================
+                         FRONTEND SCREENS (28 total)
+================================================================================
+
+--- AUTH (2 screens) ---
+  Login                    Email/password form → role-based redirect
+  Register                 Full name, email, password, role selector
+
+--- STUDENT (8 screens) ---
+  Dashboard                Recent apps, stats (total apps, interviews, active jobs)
+  Profile                  View/edit personal info, skills, preferences
+  Resume                   Upload/manage resumes, set primary
+  Job Search               Browse active jobs, filters, apply with resume + cover letter
+  Applications             View all apps, withdraw submitted ones, status tracking
+  Internships              Browse internships, apply
+  Recommendations          AI-scored job matches with match percentage
+  Reports                  Submit internship reports (weekly/monthly/final)
+
+--- FACULTY (3 screens) ---
+  Dashboard                Mentee count, pending reports
+  Mentees                  List assigned students, expandable with enrollments
+  Report Review            Review and approve/reject student reports
+
+--- EMPLOYER (5 screens) ---
+  Dashboard                Job stats, recent applications
+  Post Job                 Create job listing with skills, salary, deadline
+  Applicants               View applications per job, update status
+  Interviews               Schedule interview rounds for shortlisted candidates
+  Profile                  Edit company info
+
+--- PLACEMENT OFFICER (5 screens) ---
+  Dashboard                Placement rate, avg package, active jobs/drives
+  Drives                   Create/manage placement drives
+  Employer Management      View/verify employers
+  Analytics                Detailed placement statistics, department-wise breakdown
+  Student Overview         Browse all students
+
+--- ADMIN (4 screens) ---
+  Dashboard                System stats (total users, by role)
+  User Management          CRUD users, activate/deactivate, reset password
+  System Config            Key-value config management
+  Audit Logs               Browse audit trail
+
+--- SHARED COMPONENTS ---
+  Navbar                   User info, logout, notification bell
+  Sidebar                  Role-based navigation links
+  Notification Bell        Real-time notification dropdown
+  Status Badge             Color-coded status indicator
+  Loading Spinner          Async loading indicator
+
+--- IMPLEMENTATION STATUS ---
+  Fully implemented   : 18 screens
+  Stubbed/partial     : 10 screens (Register, Faculty Report Review,
+                        Employer Dashboard/Profile, Officer Drives/Employers/Students,
+                        Admin Config/Audit Logs)
+
+================================================================================
+                         KEY BUSINESS FLOWS
+================================================================================
+
+1. JOB APPLICATION FLOW
+   Student browses jobs → views recommendations → uploads resume →
+   applies (CGPA validated) → employer reviews → shortlists →
+   schedules interview → records feedback → offers/rejects →
+   notifications sent at each step (DB + WebSocket + email)
+
+2. PLACEMENT DRIVE FLOW
+   Officer creates drive (links jobs) → broadcasts to students →
+   students browse → drives go IN_PROGRESS → interviews during drive →
+   officer marks COMPLETED
+
+3. INTERNSHIP FLOW
+   Employer posts internship → student applies → enrolled →
+   faculty mentor assigned → student submits reports →
+   faculty reviews/approves reports
+
+4. RECOMMENDATION ENGINE
+   Student requests → loads profile + skills → loads active jobs (cached) →
+   ScoringEngine scores all (CGPA weight, skill match, experience, preferences) →
+   hard disqualifier: if student.cgpa < job.minCgpa → score=0 →
+   returns top N with matchScore
+
+================================================================================
+                         SECURITY ARCHITECTURE
+================================================================================
+
+  - Stateless JWT (no HTTP sessions)
+  - Access token: 15 min, in-memory on frontend (never localStorage)
+  - Refresh token: 7-day, httpOnly SameSite=Strict cookie, SHA-256 hashed in DB
+  - Token rotation on every refresh (replay attack detection)
+  - BCrypt strength=12 for passwords
+  - Rate limiting: 100 req/min per user, 20 req/min on /api/auth/login
+  - CORS: only localhost:4200 in dev
+  - File uploads: MIME whitelist (PDF, DOC, DOCX), max 10MB
+  - Audit logging: all mutating requests (POST/PUT/PATCH/DELETE) logged async
+  - Never log passwords, tokens, or PII
+
+================================================================================
+                         CACHING
+================================================================================
+
+  active_jobs          : 15 min TTL, evicted on job status change
+  analytics_dashboard  : 15 min TTL, evictable by admin via POST /api/analytics/refresh
+
+================================================================================
+                         REAL-TIME NOTIFICATIONS
+================================================================================
+
+  Protocol  : STOMP over SockJS at /ws
+  Auth      : Bearer token in STOMP CONNECT headers
+  Queue     : /user/queue/notifications (per-user)
+  Flow      : Save to DB → push via WebSocket → fire-and-forget email
+
+  Triggers  :
+    - Application submitted/status changed
+    - Interview scheduled
+    - New job posted (broadcast)
+    - Report feedback
+    - Drive announced (broadcast)
+
+================================================================================
+                         CONFIGURATION
+================================================================================
+
+  Backend port          : 8081
+  Frontend port         : 4200
+  MySQL                 : localhost:3306, database=placement_portal_db, user=root/root
+  Schema management     : Hibernate ddl-auto=update (Flyway disabled for Spring Boot 4.x)
+  Upload path           : ./uploads/resumes
+  WebSocket endpoint    : /ws
+
+================================================================================
