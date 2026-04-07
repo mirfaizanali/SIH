@@ -28,6 +28,10 @@ export class Profile implements OnInit {
   errorMsg = signal('');
 
   editForm = signal({
+    rollNumber: '',
+    department: '',
+    batchYear: null as number | null,
+    cgpa: null as number | null,
     phone: '',
     linkedinUrl: '',
     githubUrl: '',
@@ -41,6 +45,10 @@ export class Profile implements OnInit {
       next: res => {
         this.profile.set(res.data);
         this.editForm.set({
+          rollNumber: res.data.rollNumber ?? '',
+          department: res.data.department ?? '',
+          batchYear: res.data.batchYear ?? null,
+          cgpa: res.data.cgpa ?? null,
           phone: res.data.phone ?? '',
           linkedinUrl: res.data.linkedinUrl ?? '',
           githubUrl: res.data.githubUrl ?? '',

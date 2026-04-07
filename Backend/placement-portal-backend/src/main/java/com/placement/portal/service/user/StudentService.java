@@ -60,6 +60,10 @@ public class StudentService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         "StudentProfile for user " + userId + " not found"));
 
+        if (req.getRollNumber() != null)         profile.setRollNumber(req.getRollNumber());
+        if (req.getDepartment() != null)         profile.setDepartment(req.getDepartment());
+        if (req.getBatchYear() != null)          profile.setBatchYear(req.getBatchYear());
+        if (req.getCgpa() != null)               profile.setCgpa(req.getCgpa());
         if (req.getPhone() != null)              profile.setPhone(req.getPhone());
         if (req.getLinkedinUrl() != null)        profile.setLinkedinUrl(req.getLinkedinUrl());
         if (req.getGithubUrl() != null)          profile.setGithubUrl(req.getGithubUrl());
