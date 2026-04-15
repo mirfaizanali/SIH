@@ -65,3 +65,72 @@
   margin: 0 12px;
   color: var(--text);
 }
+
+.user-menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 8px;
+  background: transparent;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.user-menu-btn:hover {
+  background: var(--surface-variant);
+}
+.user-menu-btn mat-icon { margin: 0; }
+
+/* Global overwrite for panel shadow */
+::ng-deep .mini-profile-menu { 
+  min-width: 280px !important; 
+  border-radius: 16px !important;
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.15), 0 0 2px rgba(0, 0, 0, 0.05) !important;
+  overflow: hidden;
+}
+:host-context(html.dark-theme) ::ng-deep .mini-profile-menu {
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5), 0 0 2px rgba(255, 255, 255, 0.05) !important;
+}
+
+.mini-profile-header {
+  display: flex;
+  align-items: center;
+  padding: 1.25rem;
+  gap: 1rem;
+}
+.mini-avatar {
+  background: linear-gradient(135deg, var(--primary), #a855f7);
+  box-shadow: 0 4px 10px -2px rgba(79, 70, 229, 0.4);
+  color: #ffffff;
+  border-radius: 50%;
+  width: 48px; height: 48px;
+  display: flex; justify-content: center; align-items: center;
+}
+.mini-avatar mat-icon { font-size: 26px; width: 26px; height: 26px; }
+
+.mini-info { display: flex; flex-direction: column; gap: 0.15rem; }
+.mini-info h4 { margin: 0; font-size: 1rem; font-weight: 700; letter-spacing: -0.01em; color: var(--text); }
+.mini-email { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+
+.mini-dashboard {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.5rem 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface-variant);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+.dashboard-item { display: flex; flex-direction: column; gap: 0.1rem; }
+.d-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); font-weight: 700; }
+.d-value { font-size: 1.1rem; font-weight: 800; color: var(--text); }
+
+.cgpa-gradient {
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.logout-btn { display: flex; align-items: center; transition: background 0.2s ease;}
+.warn-text { color: #ef4444; font-weight: 600; }
+

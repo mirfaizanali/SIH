@@ -3,6 +3,8 @@ import { Profile } from './profile';
 import { ApiService } from '../../../core/services/api.service';
 import { of } from 'rxjs';
 import { By } from '@angular/platform-browser';
+import { MatDialogModule } from '@angular/material/dialog';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('Profile Component (Student)', () => {
   let component: Profile;
@@ -27,7 +29,7 @@ describe('Profile Component (Student)', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [Profile],
+      imports: [Profile, MatDialogModule, NoopAnimationsModule],
       providers: [
         { provide: ApiService, useValue: apiServiceMock }
       ]

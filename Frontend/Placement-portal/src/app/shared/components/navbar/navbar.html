@@ -7,15 +7,58 @@
 
   <app-notification-bell />
 
-  <span class="user-name">{{ authService.currentUser()?.fullName }}</span>
-
-  <button mat-icon-button (click)="themeService.toggle()"
-          [matTooltip]="themeService.isDark() ? 'Light mode' : 'Dark mode'">
-    <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+  <button mat-button [matMenuTriggerFor]="profileMenu" class="user-menu-btn">
+    <mat-icon>account_circle</mat-icon>
+    <span class="user-name">{{ authService.currentUser()?.fullName }}</span>
+    <mat-icon>arrow_drop_down</mat-icon>
   </button>
 
-  <button mat-button (click)="authService.logout()">
-    <mat-icon>logout</mat-icon>
-    Logout
-  </button>
+  <mat-menu #profileMenu="matMenu" xPosition="before" class="mini-profile-menu">
+    @if (authService.userRole() === 'STUDENT' && studentMiniProfile(); as miniP) {
+      <div class="mini-profile-header">
+        <div class="mini-avatar">
+          <mat-icon>person</mat-icon>
+        </div>
+        <div class="mini-info">
+          <h4>{{ authService.currentUser()?.fullName }}</h4>
+          <span class="mini-email">{{ authService.currentUser()?.email }}</span>
+        </div>
+      </div>
+      <mat-divider></mat-divider>
+      <div class="mini-dashboard">
+        <div class="dashboard-item">
+          <span class="d-label">CGPA</span>
+          <span class="d-value cgpa-gradient">{{ miniP.cgpa || '--' }}</span>
+        </div>
+        <div class="dashboard-item">
+          <span class="d-label">Status</span>
+          <app-status-badge [status]="miniP.isPlaced ? 'PLACED' : 'ACTIVE'" />
+        </div>
+      </div>
+      <mat-divider></mat-divider>
+      <button mat-menu-item routerLink="/student/profile">
+        <mat-icon>person</mat-icon>
+        <span>View Full Profile</span>
+      </button>
+    } @else {
+      <div class="mini-profile-header">
+        <mat-icon style="margin-right: 8px; opacity: 0.7">person</mat-icon>
+        <div class="mini-info">
+          <h4>{{ authService.currentUser()?.fullName }}</h4>
+          <span class="mini-email">{{ authService.currentUser()?.email }}</span>
+        </div>
+      </div>
+      <mat-divider></mat-divider>
+    }
+
+    <button mat-menu-item (click)="themeService.toggle()">
+      <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      <span>{{ themeService.isDark() ? 'Light Mode' : 'Dark Mode' }}</span>
+    </button>
+    
+    <button mat-menu-item (click)="authService.logout()" class="logout-btn">
+      <mat-icon color="warn">logout</mat-icon>
+      <span class="warn-text">Logout</span>
+    </button>
+  </mat-menu>
 </mat-toolbar>

@@ -6,6 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { ApiService } from '../../../core/services/api.service';
 import { StudentProfileDto } from '../../../core/models/student.model';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge';
@@ -14,18 +15,24 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
 @Component({
   selector: 'app-student-profile',
   standalone: true,
-  imports: [FormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule, StatusBadgeComponent, LoadingSpinnerComponent],
+  imports: [
+    FormsModule, MatCardModule, MatFormFieldModule, MatInputModule, 
+    MatSelectModule, MatButtonModule, MatIconModule, MatDialogModule,
+    StatusBadgeComponent, LoadingSpinnerComponent
+  ],
   templateUrl: './profile.html',
   styleUrl: './profile.css'
 })
 export class Profile implements OnInit {
   private api = inject(ApiService);
+  private dialog = inject(MatDialog);
 
   profile = signal<StudentProfileDto | null>(null);
   loading = signal(true);
   saving = signal(false);
   saveSuccess = signal(false);
   errorMsg = signal('');
+  dialogRef: MatDialogRef<any> | null = null;
 
   editForm = signal({
     rollNumber: '',
@@ -69,6 +76,39 @@ export class Profile implements OnInit {
     this.editForm.update(f => ({ ...f, [field]: value }));
   }
 
+  openEditDialog(template: any): void {
+    // Reset edit form to match current profile when opening modal
+    const current = this.profile();
+    if(current) {
+      this.editForm.set({
+        rollNumber: current.rollNumber ?? '',
+        department: current.department ?? '',
+        batchYear: current.batchYear ?? null,
+        cgpa: current.cgpa ?? null,
+        phone: current.phone ?? '',
+        linkedinUrl: current.linkedinUrl ?? '',
+        githubUrl: current.githubUrl ?? '',
+        bio: current.bio ?? '',
+        preferredLocations: current.preferredLocations ?? '',
+        preferredJobTypes: current.preferredJobTypes ?? ''
+      });
+    }
+    this.saveSuccess.set(false);
+    this.errorMsg.set('');
+    this.dialogRef = this.dialog.open(template, {
+      width: '800px',
+      maxWidth: '90vw',
+      disableClose: true
+    });
+  }
+
+  closeDialog(): void {
+    if (this.dialogRef) {
+      this.dialogRef.close();
+      this.dialogRef = null;
+    }
+  }
+
   save(): void {
     this.saving.set(true);
     this.saveSuccess.set(false);
@@ -77,6 +117,8 @@ export class Profile implements OnInit {
         this.profile.set(res.data);
         this.saving.set(false);
         this.saveSuccess.set(true);
+        this.closeDialog();
+        // Optional quick banner in background
         setTimeout(() => this.saveSuccess.set(false), 3000);
       },
       error: () => {
