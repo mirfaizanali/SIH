@@ -20,16 +20,16 @@ import { SidebarComponent, NavItem } from '../../shared/components/sidebar/sideb
     </mat-sidenav-container>
   `,
   styles: [`
-    .layout-body { height: calc(100vh - 64px); }
+    .layout-body { height: calc(100vh - 56px); }
     .sidebar-nav {
-      width: 260px;
-      background: var(--surface) !important;
-      border-right: 1px solid var(--border) !important;
+      width: 220px;
+      background: var(--color-bg-surface) !important;
+      border-right: 1px solid var(--color-border) !important;
     }
     .main-content {
-      padding: 2rem 2.5rem;
+      padding: 32px 32px 32px 24px;
       overflow-y: auto;
-      background: var(--bg);
+      background: var(--color-bg-page);
     }
   `]
 })

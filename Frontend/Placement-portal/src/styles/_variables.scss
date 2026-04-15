@@ -1,0 +1,76 @@
+// ============================================================
+// Design Tokens — Single Source of Truth
+// ============================================================
+
+// ─── Colours ────────────────────────────────────────────────
+$color-bg-page:           #0D1117;
+$color-bg-surface:        #161B22;
+$color-bg-surface-raised: #1E2530;
+$color-bg-hover:          #252D3A;
+$color-border:            rgba(255,255,255,0.08);
+$color-border-strong:     rgba(255,255,255,0.15);
+
+$color-primary:           #7C6FE0;
+$color-primary-hover:     #6A5ED4;
+$color-primary-muted:     rgba(124,111,224,0.12);
+
+$color-success-bg:        #1C3326;
+$color-success-text:      #2EA043;
+$color-danger-bg:         #3C1818;
+$color-danger-text:       #CF2B2B;
+$color-warning-bg:        #2D2500;
+$color-warning-text:      #B08800;
+$color-info-bg:           #0D2044;
+$color-info-text:         #388BFD;
+
+$color-text-primary:      #E6EDF3;
+$color-text-secondary:    #8B949E;
+$color-text-muted:        #6E7681;
+
+// ─── Spacing (8px base grid) ────────────────────────────────
+$space-1:  4px;
+$space-2:  8px;
+$space-3:  12px;
+$space-4:  16px;
+$space-5:  20px;
+$space-6:  24px;
+$space-8:  32px;
+$space-10: 40px;
+$space-12: 48px;
+
+// ─── Typography ─────────────────────────────────────────────
+$font-family:         'Inter', system-ui, -apple-system, sans-serif;
+$font-size-xs:        11px;
+$font-size-sm:        12px;
+$font-size-body:      14px;
+$font-size-md:        16px;
+$font-size-lg:        20px;
+$font-size-xl:        28px;
+
+$font-weight-regular:  400;
+$font-weight-medium:   500;
+$font-weight-semibold: 600;
+
+// ─── Borders & Radius ───────────────────────────────────────
+$radius-sm:   4px;
+$radius-md:   8px;
+$radius-lg:   12px;
+$radius-pill: 999px;
+
+// ─── Layout ─────────────────────────────────────────────────
+$sidebar-width:    220px;
+$topbar-height:    56px;
+
+// ─── Breakpoints ────────────────────────────────────────────
+$bp-sm:  576px;
+$bp-md:  768px;
+$bp-lg:  1024px;
+$bp-xl:  1280px;
+
+// ─── Transitions ────────────────────────────────────────────
+$transition-fast: 150ms ease;
+$transition-base: 200ms ease;
+
+// ─── Shadow ─────────────────────────────────────────────────
+$shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+

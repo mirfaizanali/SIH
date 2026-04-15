@@ -33,57 +33,58 @@
   <app-loading-spinner />
 } @else {
   @if (jobs().length === 0) {
-    <mat-card class="empty-state">
+    <div class="empty-state">
+      <mat-icon>search_off</mat-icon>
       <p>No jobs found matching your criteria.</p>
-    </mat-card>
+    </div>
   } @else {
+    <p class="results-count">{{ jobs().length }} jobs found</p>
     <div class="jobs-grid">
       @for (job of jobs(); track job.id) {
-        <mat-card class="job-card">
-          <div class="job-card-header">
-            <div>
-              <h3 class="job-title">{{ job.title }}</h3>
-              <p class="company-name">{{ job.companyName }}</p>
-            </div>
-            @if (isApplied(job.id)) {
-              <span class="badge badge-success">Applied</span>
-            }
-          </div>
-
-          <div class="job-meta">
-            <span class="meta-item"><mat-icon class="meta-icon">location_on</mat-icon> {{ job.location }}</span>
-            <span class="meta-item"><mat-icon class="meta-icon">payments</mat-icon> {{ formatSalary(job.salaryMin, job.salaryMax) }}</span>
-            <span class="meta-item"><mat-icon class="meta-icon">bar_chart</mat-icon> {{ job.experienceLevel }}</span>
-            <span class="meta-item"><mat-icon class="meta-icon">event</mat-icon> Deadline: {{ formatDate(job.applicationDeadline) }}</span>
-          </div>
-
-          @if (job.skills && job.skills.length > 0) {
-            <div class="skills-row">
-              @for (skill of job.skills.slice(0, 5); track skill.id) {
-                <span class="skill-chip">{{ skill.name }}</span>
-              }
-              @if (job.skills.length > 5) {
-                <span class="skill-chip more">+{{ job.skills.length - 5 }}</span>
-              }
-            </div>
-          }
-
-          <div class="job-footer">
-            <div class="job-footer-info">
+        <div class="job-card">
+          <!-- Card Body -->
+          <div class="card-body">
+            <div class="card-top-row">
+              <h3 class="card-title">{{ job.title }}</h3>
               <span class="badge badge-neutral">{{ job.jobType }}</span>
-              <span class="cgpa-req">Min CGPA: {{ job.minCgpa }}</span>
             </div>
-            @if (!isApplied(job.id)) {
-              <button mat-flat-button color="primary" (click)="openApplyModal(job)">Apply Now</button>
+            <p class="card-company">{{ job.companyName }}</p>
+
+            <div class="card-meta">
+              <span class="meta-item"><mat-icon class="meta-icon">location_on</mat-icon> {{ job.location }}</span>
+              <span class="meta-item"><mat-icon class="meta-icon">payments</mat-icon> {{ formatSalary(job.salaryMin, job.salaryMax) }}</span>
+              <span class="meta-item"><mat-icon class="meta-icon">bar_chart</mat-icon> {{ job.experienceLevel }}</span>
+              <span class="meta-item"><mat-icon class="meta-icon">event</mat-icon> {{ formatDate(job.applicationDeadline) }}</span>
+            </div>
+
+            @if (job.skills && job.skills.length > 0) {
+              <div class="card-skills">
+                @for (skill of job.skills.slice(0, 4); track skill.id) {
+                  <span class="skill-chip">{{ skill.name }}</span>
+                }
+                @if (job.skills.length > 4) {
+                  <span class="skill-chip more">+{{ job.skills.length - 4 }}</span>
+                }
+              </div>
+            }
+
+            <span class="cgpa-req">Min CGPA: {{ job.minCgpa }}</span>
+          </div>
+
+          <!-- Card Footer -->
+          <div class="card-footer">
+            @if (isApplied(job.id)) {
+              <span class="applied-status">
+                <mat-icon class="applied-icon">check_circle</mat-icon> Applied
+              </span>
             } @else {
-              <span class="applied-text">Applied</span>
+              <button class="btn btn-primary card-btn" (click)="openApplyModal(job)">Apply Now</button>
             }
           </div>
-        </mat-card>
+        </div>
       }
     </div>
 
-    <!-- Pagination -->
     <mat-paginator [length]="totalElements()" [pageSize]="pageSize" [pageIndex]="currentPage()" (page)="onPageChange($event)" [pageSizeOptions]="[12, 24, 48]"></mat-paginator>
   }
 }
@@ -105,7 +106,6 @@
         @if (applyError()) {
           <div class="alert alert-error">{{ applyError() }}</div>
         }
-
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Select Resume *</mat-label>
           <mat-select [value]="applyForm().resumeId"
@@ -116,7 +116,6 @@
             }
           </mat-select>
         </mat-form-field>
-
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Cover Letter (optional)</mat-label>
           <textarea matInput rows="5" [value]="applyForm().coverLetter"

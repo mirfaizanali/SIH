@@ -1,83 +1,118 @@
-/* ─── Internships Grid ─── */
+/* ─── Internships List (full-width stacked rows) ─── */
 .internships-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 1.25rem;
-}
-
-.internship-card {
   display: flex;
   flex-direction: column;
-  gap: 0.875rem;
-  border-radius: var(--radius) !important;
-  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  gap: 12px;
+}
+
+/* ─── Internship Card — full-width row ─── */
+.internship-card {
+  width: 100%;
+  display: grid !important;
+  grid-template-columns: 1fr auto !important;
+  grid-template-rows: auto auto !important;
+  gap: 8px 16px !important;
+  padding: 20px 24px !important;
+  border-radius: var(--radius-lg) !important;
+  background: var(--color-bg-surface) !important;
+  border: 1px solid var(--color-border) !important;
+  box-shadow: none !important;
+  transition: border-color 150ms ease, background 150ms ease !important;
+  cursor: pointer;
 }
 .internship-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-md) !important;
+  border-color: var(--color-border-strong) !important;
+  background: var(--color-bg-surface-raised) !important;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 .card-top {
+  grid-column: 1;
+  grid-row: 1;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 0.75rem;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .card-top h3 {
-  font-size: 1.05rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
 }
 
 .company {
-  font-size: 0.875rem;
-  color: var(--primary);
-  font-weight: 600;
-  margin-top: 0.2rem;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  font-weight: 400;
+  margin-top: 2px;
 }
 
 .badges {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.375rem;
+  gap: 6px;
   flex-shrink: 0;
 }
 
 .internship-meta {
+  grid-column: 1;
+  grid-row: 2;
   display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .meta-row {
   display: flex;
-  gap: 1rem;
-  font-size: 0.8125rem;
-  color: var(--text-muted);
+  gap: 16px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
 }
 
 .meta-row span {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 4px;
 }
 
 .description {
-  font-size: 0.8125rem;
-  color: var(--text-muted);
-  line-height: 1.6;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin-top: 4px;
 }
 
 .card-footer {
+  grid-column: 2;
+  grid-row: 1 / -1;
   display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   justify-content: space-between;
-  align-items: center;
-  margin-top: auto;
-  padding-top: 0.875rem;
-  border-top: 1px solid var(--border);
+  gap: 8px;
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
 }
 
-.full-width {
-  width: 100%;
+.full-width { width: 100%; }
+
+/* ─── Responsive ─── */
+@media (max-width: 767px) {
+  .internship-card {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto auto auto !important;
+  }
+  .card-footer {
+    grid-column: 1;
+    grid-row: 3;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid var(--color-border);
+    padding-top: 12px;
+    margin-top: 4px;
+  }
 }

@@ -8,60 +8,61 @@
 } @else if (profile(); as p) {
   <div class="profile-layout">
     <div class="left-section">
-      <!-- Consolidated Profile -->
-      <mat-card class="profile-info">
-        <div class="section-header">
-          <h2>Student Profile</h2>
-          <button mat-stroked-button color="primary" (click)="openEditDialog(editDialog)">
-            <mat-icon>edit</mat-icon> Edit Profile
+      <div class="profile-card">
+        <!-- New Header Row -->
+        <div class="profile-header">
+          <div class="profile-header-left">
+            <div class="avatar"><mat-icon>person</mat-icon></div>
+            <div class="header-text">
+              <span class="header-name">{{ p.fullName }}</span>
+              <span class="header-email">{{ p.email }}</span>
+            </div>
+          </div>
+          <button mat-stroked-button class="btn btn-secondary" style="height:36px" (click)="openEditDialog(editDialog)">
+            Edit Profile
           </button>
         </div>
-        <div class="info-grid">
-          <div class="info-item">
-            <span class="info-label">Full Name</span>
-            <span class="info-value">{{ p.fullName }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Email</span>
-            <span class="info-value">{{ p.email }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Placement Status</span>
-            <app-status-badge [status]="p.isPlaced ? 'PLACED' : 'ACTIVE'" />
-          </div>
-          @if (p.isPlaced) {
+
+        <hr class="divider"/>
+
+        <!-- Placement Status Row (Full block) -->
+        <div class="info-section">
+          <div class="info-row">
             <div class="info-item">
-              <span class="info-label">Placed At</span>
-              <span class="info-value">{{ p.placedCompany }}</span>
+               <span class="info-label">Placement Status</span>
+               <div><app-status-badge [status]="p.isPlaced ? 'PLACED' : 'ACTIVE'" /></div>
+            </div>
+            @if (p.isPlaced) {
+              <div class="info-item">
+                 <span class="info-label">Placement Package</span>
+                 <span class="info-value">₹{{ p.placementPackage }} LPA</span>
+              </div>
+            }
+          </div>
+
+          <!-- Academic Layout -->
+          <div class="info-row">
+            <div class="info-item">
+              <span class="info-label">Roll Number</span>
+              <span class="info-value">{{ p.rollNumber || '--' }}</span>
             </div>
             <div class="info-item">
-              <span class="info-label">Package</span>
-              <span class="info-value">₹{{ p.placementPackage }}  LPA</span>
+              <span class="info-label">Department</span>
+              <span class="info-value">{{ p.department || '--' }} ({{ p.batchYear || '--' }})</span>
             </div>
+          </div>
+
+          <hr class="divider"/>
+          
+          <!-- Bio & Preferences -->
+          @if (p.bio) {
+             <div class="info-item">
+                <span class="info-label">Bio</span>
+                <span class="info-value">{{ p.bio }}</span>
+             </div>
           }
-        </div>
 
-        @if (p.skills && p.skills.length > 0) {
-          <div class="skills-section">
-            <h3>Skills</h3>
-            <div class="skills-list">
-              @for (skill of p.skills; track skill.id) {
-                <span class="skill-chip">{{ skill.name }}</span>
-              }
-            </div>
-          </div>
-        }
-
-        @if (p.bio) {
-          <div class="skills-section">
-            <h3>Bio</h3>
-            <span class="info-value" style="font-size: 0.85rem; line-height: 1.4; display: block; margin-top: 0.5rem;">{{ p.bio }}</span>
-          </div>
-        }
-
-        <div class="skills-section">
-          <h3>Contact & Preferences</h3>
-          <div class="info-grid" style="margin-top: 0.5rem">
+          <div class="info-row" style="margin-top: 8px;">
             <div class="info-item">
               <span class="info-label">Phone</span>
               <span class="info-value">{{ p.phone || 'Not provided' }}</span>
@@ -70,27 +71,25 @@
               <span class="info-label">Preferred Locations</span>
               <span class="info-value">{{ p.preferredLocations || 'Not specified' }}</span>
             </div>
+          </div>
+
+          <div class="info-row">
             <div class="info-item">
               <span class="info-label">Job Preferences</span>
               <span class="info-value">{{ p.preferredJobTypes || 'Not specified' }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Links</span>
-              <div style="display: flex; gap: 0.5rem;">
-                @if (p.linkedinUrl) {
-                  <a [href]="p.linkedinUrl" target="_blank" class="info-value" style="color: var(--primary);">LinkedIn</a>
-                }
-                @if (p.githubUrl) {
-                  <a [href]="p.githubUrl" target="_blank" class="info-value" style="color: var(--primary);">GitHub</a>
-                }
-                @if (!p.linkedinUrl && !p.githubUrl) {
-                  <span class="info-value">None</span>
-                }
+              <div class="links-list">
+                @if (p.linkedinUrl) { <a [href]="p.linkedinUrl" target="_blank">LinkedIn</a> }
+                @if (p.githubUrl) { <a [href]="p.githubUrl" target="_blank">GitHub</a> }
+                @if (!p.linkedinUrl && !p.githubUrl) { <span class="info-value">None</span> }
               </div>
             </div>
           </div>
+
         </div>
-      </mat-card>
+      </div>
     </div>
 
     <!-- Editable fields (Modal Template) -->

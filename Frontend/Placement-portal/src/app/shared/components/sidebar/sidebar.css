@@ -1,92 +1,63 @@
 /* ─── Sidebar Container ─── */
 .sidebar {
-  width: 260px;
-  min-width: 260px;
+  width: 220px;
+  min-width: 220px;
   min-height: 100%;
-  padding: 1.5rem 1rem;
+  padding: 16px 0;
   display: flex;
   flex-direction: column;
 }
 
-/* ─── Strip Material's default list padding & ripple noise ─── */
+/* ─── Strip Material's default list padding ─── */
 ::ng-deep .mat-mdc-nav-list {
   padding-top: 0 !important;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 /* ─── Each Nav Item ─── */
 ::ng-deep .mdc-list-item {
   margin-bottom: 0 !important;
-  border-radius: var(--radius) !important;
-  min-height: 48px !important;
+  border-radius: 0 !important;
+  min-height: 40px !important;
+  height: 40px !important;
   padding: 0 16px !important;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  color: var(--text-muted) !important;
+  transition: background 150ms ease !important;
+  color: var(--color-text-secondary) !important;
   font-weight: 500 !important;
-  font-size: 0.9rem !important;
-  letter-spacing: 0.01em !important;
+  font-size: 14px !important;
   position: relative;
-  overflow: hidden;
 }
 
 /* Hover State */
 ::ng-deep .mdc-list-item:hover {
-  background: var(--surface-hover) !important;
-  color: var(--text) !important;
+  background: var(--color-bg-hover) !important;
+  color: var(--color-text-primary) !important;
 }
 
-/* ─── Active Link — The Star of the Show ─── */
+/* ─── Active Link ─── */
 ::ng-deep .mdc-list-item.active-link {
-  background: var(--primary-50) !important;
-  color: var(--primary) !important;
+  background: var(--color-primary-muted) !important;
+  color: var(--color-primary) !important;
   font-weight: 600 !important;
-  box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.12);
-}
-
-/* Active link: vibrant left accent bar */
-::ng-deep .mdc-list-item.active-link::before {
-  content: '' !important;
-  position: absolute !important;
-  left: 0 !important;
-  top: 8px !important;
-  bottom: 8px !important;
-  width: 4px !important;
-  border-radius: 0 4px 4px 0 !important;
-  background: var(--primary-gradient) !important;
-  opacity: 1 !important;
-}
-
-/* Dark theme active */
-:host-context(html.dark-theme) ::ng-deep .mdc-list-item.active-link {
-  background: rgba(99, 102, 241, 0.12) !important;
-  color: #a5b4fc !important;
-  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.15);
-}
-
-:host-context(html.dark-theme) ::ng-deep .mdc-list-item.active-link::before {
-  background: linear-gradient(180deg, #6366f1, #8b5cf6) !important;
+  border-left: 3px solid var(--color-primary) !important;
 }
 
 /* ─── Icons ─── */
 ::ng-deep .mdc-list-item__start {
   color: inherit !important;
-  margin-right: 14px !important;
-  font-size: 22px !important;
-  width: 22px !important;
-  height: 22px !important;
-  opacity: 0.7;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-right: 12px !important;
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  opacity: 0.8;
+  transition: opacity 150ms ease;
 }
 
 ::ng-deep .mdc-list-item.active-link .mdc-list-item__start {
   opacity: 1;
-  color: var(--primary) !important;
-}
-
-:host-context(html.dark-theme) ::ng-deep .mdc-list-item.active-link .mdc-list-item__start {
-  color: #a5b4fc !important;
+  color: var(--color-primary) !important;
 }
 
 ::ng-deep .mdc-list-item:hover .mdc-list-item__start {
@@ -97,5 +68,5 @@
 ::ng-deep .mdc-list-item__primary-text {
   font-family: 'Inter', system-ui, sans-serif !important;
   font-size: inherit !important;
-  letter-spacing: inherit !important;
+  letter-spacing: 0 !important;
 }
