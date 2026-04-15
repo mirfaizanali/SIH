@@ -31,6 +31,8 @@ public class StudentProfileDto {
     private BigDecimal placementPackage;
     private String placedCompany;
     private String facultyMentorId;
+    private String preferredLocations;
+    private String preferredJobTypes;
     private List<SkillDto> skills;
     private LocalDateTime createdAt;
 }

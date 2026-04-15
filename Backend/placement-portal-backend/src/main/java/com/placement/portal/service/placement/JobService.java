@@ -85,7 +85,7 @@ public class JobService {
     @Transactional(readOnly = true)
     @Cacheable("active_jobs")
     public Page<JobDto> getActiveJobs(String location, String experienceLevel, Pageable pageable) {
-        Page<Job> page = jobRepository.findByStatusAndApplicationDeadlineAfter(
+        Page<Job> page = jobRepository.findActiveJobs(
                 JobStatus.ACTIVE, LocalDate.now(), pageable);
         return page.map(job -> {
             if (location != null && !location.equalsIgnoreCase(job.getLocation())) return null;

@@ -53,8 +53,8 @@ export class Profile implements OnInit {
           linkedinUrl: res.data.linkedinUrl ?? '',
           githubUrl: res.data.githubUrl ?? '',
           bio: res.data.bio ?? '',
-          preferredLocations: '',
-          preferredJobTypes: ''
+          preferredLocations: res.data.preferredLocations ?? '',
+          preferredJobTypes: res.data.preferredJobTypes ?? ''
         });
         this.loading.set(false);
       },

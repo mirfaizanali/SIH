@@ -130,7 +130,7 @@ public class ResumeStorageService {
         try {
             Files.deleteIfExists(filePath);
         } catch (IOException e) {
-            log.warn("Could not delete résumé file at {}: {}", filePath, e.getMessage());
+            throw new UncheckedIOException("Could not delete résumé file at " + filePath, e);
         }
 
         resumeRepository.delete(resume);

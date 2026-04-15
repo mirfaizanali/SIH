@@ -69,6 +69,8 @@ public class EntityMapper {
                 .placementPackage(sp.getPlacementPackage())
                 .placedCompany(sp.getPlacedCompany())
                 .facultyMentorId(facultyMentorId)
+                .preferredLocations(sp.getPreferredLocations())
+                .preferredJobTypes(sp.getPreferredJobTypes())
                 .skills(skillDtos)
                 .createdAt(sp.getCreatedAt())
                 .build();

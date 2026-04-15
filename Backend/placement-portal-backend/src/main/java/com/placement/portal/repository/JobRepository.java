@@ -17,7 +17,8 @@ public interface JobRepository extends JpaRepository<Job, String> {
 
     List<Job> findByEmployerId(String employerId);
 
-    Page<Job> findByStatusAndApplicationDeadlineAfter(JobStatus status, LocalDate deadline, Pageable pageable);
+    @org.springframework.data.jpa.repository.Query("SELECT j FROM Job j WHERE j.status = :status AND (j.applicationDeadline IS NULL OR j.applicationDeadline >= :deadline)")
+    Page<Job> findActiveJobs(@org.springframework.data.repository.query.Param("status") JobStatus status, @org.springframework.data.repository.query.Param("deadline") LocalDate deadline, Pageable pageable);
 
     // ---------------------------------------------------------------------------
     // Analytics queries

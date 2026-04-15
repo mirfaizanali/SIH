@@ -17,6 +17,8 @@ export interface StudentProfileDto {
   placementPackage: number;
   placedCompany: string;
   facultyMentorId: string;
+  preferredLocations?: string;
+  preferredJobTypes?: string;
   skills: SkillDto[];
   createdAt: string;
 }

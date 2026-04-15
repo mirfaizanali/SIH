@@ -53,7 +53,7 @@ public class EmployerService {
             try {
                 profile.setCompanySize(CompanySize.valueOf(req.getCompanySize().toUpperCase()));
             } catch (IllegalArgumentException e) {
-                log.warn("Unknown company size value '{}', ignoring update", req.getCompanySize());
+                throw new IllegalArgumentException("Invalid company size value: " + req.getCompanySize());
             }
         }
         if (req.getHrContactName()  != null) profile.setHrContactName(req.getHrContactName());
